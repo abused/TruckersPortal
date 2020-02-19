@@ -51,15 +51,8 @@ let MaterialNavStyles = theme => ({
         }
     },
     navListItem: {
-        '&:hover': {
-            backgroundColor: theme.palette.active
-        },
         '&.Mui-selected': {
-            backgroundColor: theme.palette.active,
-            borderLeft: theme.palette.active,
-            '&:hover': {
-                backgroundColor: theme.palette.active
-            }
+            borderLeft: `4px solid ${theme.palette.primary.light}`
         }
     },
     topNav: {

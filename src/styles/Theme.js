@@ -4,7 +4,7 @@ let defaultTheme = createMuiTheme({
     palette: {
         primary: {
             light: '#2196f3',
-            main: '#1976D2',
+            main: '#1976D2'
         },
         secondary: {
             main: '#dc004e'
@@ -26,9 +26,9 @@ let defaultTheme = createMuiTheme({
             primary: '#000',
             secondary: '#FFFFFF'
         },
-        active: {
-            backgroundColor: '#515962',
-            color: '#FFFFFF'
+        action: {
+            hover: '#515962',
+            selected: '#515962'
         }
     }
 });

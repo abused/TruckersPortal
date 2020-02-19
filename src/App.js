@@ -8,11 +8,11 @@ import {
     Typography,
     Button,
     withStyles,
-    ThemeProvider,
     Drawer,
     List,
     Divider,
-    CssBaseline
+    CssBaseline,
+    MuiThemeProvider
 } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import {AccountCircle} from "@material-ui/icons";
@@ -66,7 +66,7 @@ class App extends React.Component {
         let {classes} = this.props;
 
         return (
-            <ThemeProvider theme={defaultTheme}>
+            <MuiThemeProvider theme={defaultTheme}>
                 <CssBaseline />
                 <div style={NavStyles.body}>
                     <AppBar position='fixed' className={clsx(classes.topNav, {[classes.topNavShift]: sideNavOpen})}>
@@ -128,9 +128,9 @@ class App extends React.Component {
                         {Screen != null ? <Screen /> : 'Unknown Screen Error'}
                     </div>
                 </div>
-            </ThemeProvider>
+            </MuiThemeProvider>
         );
     }
 }
 
-export default withStyles(MaterialNavStyles)(App);
+export default withStyles(MaterialNavStyles, {withTheme: true, defaultTheme})(App);
