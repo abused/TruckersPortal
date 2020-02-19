@@ -4,7 +4,7 @@ let defaultTheme = createMuiTheme({
     palette: {
         primary: {
             light: '#2196f3',
-            main: '#1976D2'
+            main: '#1976D2',
         },
         secondary: {
             main: '#dc004e'
@@ -19,18 +19,18 @@ let defaultTheme = createMuiTheme({
             main: '#4caf50'
         },
         background: {
-            paper: '#343E4A',
+            paper: '#343F4A',
             default: '#eceff1'
         },
         text: {
             primary: '#000',
             secondary: '#FFFFFF'
+        },
+        active: {
+            backgroundColor: '#515962',
+            color: '#FFFFFF'
         }
     }
 });
 
-let Theme = {
-    backgroundColor: '#eceff1',
-};
-
-export {Theme, defaultTheme};
+export {defaultTheme};

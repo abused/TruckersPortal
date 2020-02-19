@@ -1,10 +1,8 @@
-import {Theme} from './Theme';
 let sideNavWidth = 240;
 
 let NavStyles = {
     body: {
-        flexGrow: 1,
-        backgroundColor: Theme.backgroundColor
+        flexGrow: 1
     }
 };
 
@@ -37,7 +35,7 @@ let MaterialNavStyles = theme => ({
         width: sideNavWidth,
         overflow: 'hidden',
         transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
+            easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen
         })
     },
@@ -45,18 +43,29 @@ let MaterialNavStyles = theme => ({
         width: theme.spacing(7) + 1,
         overflow: 'hidden',
         transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
+            easing: theme.transitions.easing.easeIn,
             duration: theme.transitions.duration.leavingScreen
         }),
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(7) + 1
         }
     },
+    navListItem: {
+        '&:hover': {
+            backgroundColor: theme.palette.active
+        },
+        '&.Mui-selected': {
+            backgroundColor: theme.palette.active,
+            borderLeft: theme.palette.active,
+            '&:hover': {
+                backgroundColor: theme.palette.active
+            }
+        }
+    },
     topNav: {
-        zIndex: theme.zIndex.drawer + 1,
         width: `calc(100% - ${theme.spacing(7) + 1}px)`,
         transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
+            easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen
         })
     },
@@ -64,7 +73,7 @@ let MaterialNavStyles = theme => ({
         marginLeft: sideNavWidth,
         width: `calc(100% - ${sideNavWidth}px)`,
         transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
+            easing: theme.transitions.easing.easeIn,
             duration: theme.transitions.duration.leavingScreen
         })
     },
@@ -87,17 +96,17 @@ let MaterialNavStyles = theme => ({
     },
     content: {
         flexGrow: 1,
-        zIndex: theme.zIndex.drawer + 1,
-        width: `calc(100% - ${theme.spacing(7) + 1}px)`,
+        margin: 0,
+        width: `calc(100% - ${theme.spacing(7) + 1})`,
+        marginLeft: theme.spacing(7) + 1,
         transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen
         })
     },
     contentShift: {
-        flexGrow: 1,
         marginLeft: sideNavWidth,
-        width: `calc(100% - ${sideNavWidth}px)`,
+        width: `calc(100% - ${sideNavWidth})`,
         transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen

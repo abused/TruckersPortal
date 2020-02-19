@@ -1,11 +1,12 @@
 import React from "react";
 import {ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
 import {Create, Dashboard, LocalShipping, NoteAdd, People, RecentActors, Settings} from "@material-ui/icons";
+import DashboardScreen from "../screens/DashboardScreen";
 
 let Navigation = [
     {
         name: 'Dashboard',
-        screen: null,
+        screen: DashboardScreen,
         icon: Dashboard
     },
     {
@@ -40,13 +41,14 @@ let Navigation = [
     }
 ];
 
-function renderNavigation() {
+function renderNavigation(navigate, classes, active) {
     return Navigation.map(option => {
+        let screen = option.screen;
         let name = option.name;
         let Icon = option.icon;
 
         return (
-            <ListItem button key={name}>
+            <ListItem button key={name} className={classes.navListItem} selected={active === name} onClick={() => navigate(screen, name)}>
                 <ListItemIcon><Typography color='textSecondary'><Icon /></Typography></ListItemIcon>
                 <ListItemText><Typography color='textSecondary'>{name}</Typography></ListItemText>
             </ListItem>
