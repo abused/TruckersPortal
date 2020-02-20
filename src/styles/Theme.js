@@ -4,7 +4,23 @@ let defaultTheme = createMuiTheme({
     palette: {
         primary: {
             light: '#2196f3',
-            main: '#1976D2'
+            main: '#1976D2',
+            blue: {
+                left: '#0892D3',
+                right: '#25C5DA'
+            },
+            red: {
+                left: '#FF5455',
+                right: '#F48DAE'
+            },
+            orange: {
+                left: '#FF8108',
+                right: '#FFC827'
+            },
+            green: {
+                left: '#42A24A',
+                right: '#25DAA0'
+            }
         },
         secondary: {
             main: '#dc004e'

@@ -37,6 +37,20 @@ class PanelPage extends React.Component {
         this.navigate = this.navigate.bind(this);
     }
 
+    componentDidMount() {
+        window.addEventListener('resize', this.windowResizeEvent.bind(this));
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.windowResizeEvent.bind(this));
+    }
+
+    windowResizeEvent = () => {
+        if(window.innerWidth < 500) {
+            this.setState({sideNavOpen: false});
+        }
+    };
+
     navigate = (Screen, screenName) => {
         this.setState({Screen, screenName});
     };
