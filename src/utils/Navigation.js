@@ -3,6 +3,7 @@ import {ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/cor
 import {Create, Dashboard, LocalShipping, NoteAdd, People, RecentActors, Settings} from "@material-ui/icons";
 import DashboardScreen from "../screens/DashboardScreen";
 import LoadsScreen from "../screens/LoadsScreen";
+import DriversScreen from "../screens/DriversScreen";
 
 let Navigation = [
     {
@@ -17,7 +18,7 @@ let Navigation = [
     },
     {
         name: 'Drivers',
-        screen: null,
+        screen: DriversScreen,
         icon: RecentActors
     },
     {

@@ -1,7 +1,7 @@
 import React from "react";
 import {
     withStyles,
-    ThemeProvider,
+    MuiThemeProvider,
     Table,
     TableBody,
     TableCell,
@@ -10,21 +10,18 @@ import {
     TableRow,
     TableFooter,
     TablePagination,
-    IconButton,
     Typography,
     List,
     ListItem,
     ListItemText,
     Button
 } from "@material-ui/core";
-import {KeyboardArrowLeft, KeyboardArrowRight} from "@material-ui/icons";
-import PropTypes from 'prop-types';
 import {defaultTheme} from "../styles/Theme";
 import {MaterialLoadsStyles} from "../styles/LoadsStyles";
 import {converToMoney} from "../utils/NumberUtils";
+import {TablePaginationActions, rowsPerPage} from "../utils/TableUtils";
 import LoadsCreateScreen from "./LoadsCreateScreen";
 
-let rowsPerPage = 8;
 let loads = [
     {
         loadNumber: '6876760',
@@ -113,7 +110,7 @@ class LoadsScreen extends React.Component {
         }
 
         return (
-            <ThemeProvider theme={defaultTheme}>
+            <MuiThemeProvider theme={defaultTheme}>
                 <div className={classes.content}>
                     <div className={classes.filterContainer}>
                         <div className={classes.filterHeader}>
@@ -173,39 +170,9 @@ class LoadsScreen extends React.Component {
                         </Table>
                     </TableContainer>
                 </div>
-            </ThemeProvider>
+            </MuiThemeProvider>
         );
     }
 }
-
-function TablePaginationActions(props) {
-    let {page, count, onChangePage} = props;
-
-    let nextPage = (event) => {
-        onChangePage(event, page + 1);
-    };
-
-    let previousPage = (event) => {
-        onChangePage(event, page - 1);
-    };
-
-    return (
-        <div style={{flexShrink: 0, display: 'flex', flexDirection: 'row'}}>
-            <IconButton onClick={previousPage} disabled={page === 0} aria-label='previous page'>
-                <KeyboardArrowLeft />
-            </IconButton>
-            <p>Page: {page+1}</p>
-            <IconButton onClick={nextPage} disabled={page >= Math.ceil(count / rowsPerPage) - 1} aria-label='next page'>
-                <KeyboardArrowRight />
-            </IconButton>
-        </div>
-    );
-}
-
-TablePaginationActions.propTypes = {
-    count: PropTypes.number.isRequired,
-    onChangePage: PropTypes.func.isRequired,
-    page: PropTypes.number.isRequired
-};
 
 export default withStyles(MaterialLoadsStyles, {withTheme: true, defaultTheme})(LoadsScreen);
