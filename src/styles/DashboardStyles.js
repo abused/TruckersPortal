@@ -81,7 +81,8 @@ let MaterialDashboardStyles = theme => ({
         }
     },
     driverTable: {
-        boxShadow: `1px 1px 21px 0px rgba(0, 0, 0, 0.4)`
+        backgroundColor: theme.palette.primary.table.main,
+        boxShadow: `2px 2px 15px -6px rgba(0, 0, 0, 0.75)`
     },
     tableHead: {
         background: `linear-gradient(40deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`

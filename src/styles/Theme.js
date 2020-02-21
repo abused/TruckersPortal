@@ -20,6 +20,9 @@ let defaultTheme = createMuiTheme({
             green: {
                 left: '#42A24A',
                 right: '#25DAA0'
+            },
+            table: {
+                main: '#FFFFFF'
             }
         },
         secondary: {

@@ -57,6 +57,7 @@ class PanelPage extends React.Component {
 
     renderUserMenu = () => {
         let {userMenu} = this.state;
+        let {classes} = this.props;
 
         return (
             <Menu
@@ -68,9 +69,10 @@ class PanelPage extends React.Component {
                 getContentAnchorEl={null}
                 anchorOrigin={{vertical: 'bottom'}}
                 transformOrigin={{vertical: 'top'}}
+                className={classes.dropdownMenu}
             >
-                <MenuItem onClick={() => console.log("Click!")}>My Account</MenuItem>
-                <MenuItem onClick={() => console.log("Click!")}>Logout</MenuItem>
+                <MenuItem className={classes.menuItems} onClick={() => console.log("Click!")}>My Account</MenuItem>
+                <MenuItem className={classes.menuItems} onClick={() => console.log("Click!")}>Logout</MenuItem>
             </Menu>
         );
     };

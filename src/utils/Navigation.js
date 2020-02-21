@@ -2,6 +2,7 @@ import React from "react";
 import {ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
 import {Create, Dashboard, LocalShipping, NoteAdd, People, RecentActors, Settings} from "@material-ui/icons";
 import DashboardScreen from "../screens/DashboardScreen";
+import LoadsScreen from "../screens/LoadsScreen";
 
 let Navigation = [
     {
@@ -11,7 +12,7 @@ let Navigation = [
     },
     {
         name: 'Loads',
-        screen: null,
+        screen: LoadsScreen,
         icon: LocalShipping
     },
     {

@@ -16,13 +16,14 @@ import {LocalShipping, PlaylistAddCheck, MoneyOff, AccountBalanceWallet} from "@
 import clsx from "clsx";
 import {MaterialDashboardStyles} from "../styles/DashboardStyles";
 import {defaultTheme} from "../styles/Theme";
+import {converToMoney} from "../utils/NumberUtils";
 
 let driverData = [
     {
         name: 'Driver 1',
         loadsCompleted: '2',
         payCut: '20%',
-        earnings: '$5,400',
+        earnings: '5400',
         phoneNumber: '(313) 315-1514',
         status: 'Driving'
     },
@@ -30,7 +31,7 @@ let driverData = [
         name: 'Driver 2',
         loadsCompleted: '0',
         payCut: '20%',
-        earnings: '$0',
+        earnings: '0',
         phoneNumber: '(734) 321-6528',
         status: 'Sitting'
     },
@@ -38,7 +39,7 @@ let driverData = [
         name: 'Driver 3',
         loadsCompleted: '1',
         payCut: '15%',
-        earnings: '$2,200',
+        earnings: '2200',
         phoneNumber: '(313) 315-1514',
         status: 'Driving'
     },
@@ -46,7 +47,7 @@ let driverData = [
         name: 'Driver 4',
         loadsCompleted: '6',
         payCut: '20%',
-        earnings: '$16,350',
+        earnings: '16350',
         phoneNumber: '(734) 321-1258',
         status: 'Driving'
     }
@@ -79,8 +80,8 @@ class DashboardScreen extends React.Component {
             <MuiThemeProvider theme={defaultTheme}>
                 <div className={classes.content}>
                     <Grid container spacing={4} className={classes.contentGrid} direction='row' justify='center' wrap='wrap'>
-                        {this.renderInfoCard(AccountBalanceWallet, 'Annual Revenue', '$10,000', classes.blueGradient)}
-                        {this.renderInfoCard(MoneyOff, 'Unpaid Loads', '$4,500', classes.redGradient)}
+                        {this.renderInfoCard(AccountBalanceWallet, 'Annual Revenue', converToMoney('10000'), classes.blueGradient)}
+                        {this.renderInfoCard(MoneyOff, 'Unpaid Loads', converToMoney('4500'), classes.redGradient)}
                         {this.renderInfoCard(LocalShipping, 'Current Loads', '3', classes.orangeGradient)}
                         {this.renderInfoCard(PlaylistAddCheck, 'Completed Loads', '24', classes.greenGradient)}
 
@@ -99,11 +100,11 @@ class DashboardScreen extends React.Component {
                                     </TableHead>
                                     <TableBody>
                                         {driverData.map(driver => (
-                                            <TableRow>
+                                            <TableRow key={driver.name}>
                                                 <TableCell>{driver.name}</TableCell>
                                                 <TableCell align='center'>{driver.loadsCompleted}</TableCell>
                                                 <TableCell align='center'>{driver.payCut}</TableCell>
-                                                <TableCell align='center'>{driver.earnings}</TableCell>
+                                                <TableCell align='center'>{converToMoney(driver.earnings)}</TableCell>
                                                 <TableCell align='center'>{driver.phoneNumber}</TableCell>
                                                 <TableCell align='center' className={driver.status === 'Driving' ? classes.driving : classes.sitting}>{driver.status}</TableCell>
                                             </TableRow>
