@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import {defaultTheme} from "../styles/Theme";
 import {MaterialLoadsStyles} from "../styles/LoadsStyles";
 import {converToMoney} from "../utils/NumberUtils";
+import LoadsCreateScreen from "./LoadsCreateScreen";
 
 let rowsPerPage = 8;
 let loads = [
@@ -71,8 +72,14 @@ class LoadsScreen extends React.Component {
 
     state = {
         page: 0,
-        filter: 'All'
+        filter: 'All',
+        addLoad: false
     };
+
+    constructor(props) {
+        super(props);
+        this.handleCreateLoad = this.handleCreateLoad.bind(this);
+    }
 
     handleChangePage = (event, newPage) => {
         this.setState({page: newPage});
@@ -93,10 +100,17 @@ class LoadsScreen extends React.Component {
         }).slice(0).reverse();
     };
 
+    handleCreateLoad = () => {
+        this.setState({addLoad: !this.state.addLoad});
+    };
+
     render() {
-        let {page} = this.state;
+        let {page, addLoad, filter} = this.state;
         let {classes} = this.props;
         let emptyRows = rowsPerPage - Math.min(rowsPerPage, loads.length - page * rowsPerPage);
+        if(addLoad) {
+            return <LoadsCreateScreen  handleCreateLoad={this.handleCreateLoad}/>;
+        }
 
         return (
             <ThemeProvider theme={defaultTheme}>
@@ -104,14 +118,14 @@ class LoadsScreen extends React.Component {
                     <div className={classes.filterContainer}>
                         <div className={classes.filterHeader}>
                             <Typography variant='h6'>Filter Options</Typography>
-                            <Button variant='contained' color='primary'>Add Load</Button>
+                            <Button variant='contained' color='primary' onClick={this.handleCreateLoad}>Add Load</Button>
                         </div>
 
                         <List className={classes.filterOptions}>
-                            <ListItem button key='All' className={classes.filterItem} onClick={() => this.setFilter('All')}><ListItemText>All</ListItemText></ListItem>
-                            <ListItem button key='Complete' className={classes.filterItem} onClick={() => this.setFilter('Complete')}><ListItemText>Complete</ListItemText></ListItem>
-                            <ListItem button key='InProgress' className={classes.filterItem} onClick={() => this.setFilter('In Progress')}><ListItemText>In Progress</ListItemText></ListItem>
-                            <ListItem button key='Canceled' className={classes.filterItem} onClick={() => this.setFilter('Canceled')}><ListItemText>Canceled</ListItemText></ListItem>
+                            <ListItem button key='All' className={classes.filterItem} selected={filter === 'All'} onClick={() => this.setFilter('All')}><ListItemText>All</ListItemText></ListItem>
+                            <ListItem button key='Complete' className={classes.filterItem} selected={filter === 'Complete'} onClick={() => this.setFilter('Complete')}><ListItemText>Complete</ListItemText></ListItem>
+                            <ListItem button key='InProgress' className={classes.filterItem} selected={filter === 'In Progress'} onClick={() => this.setFilter('In Progress')}><ListItemText>In Progress</ListItemText></ListItem>
+                            <ListItem button key='Canceled' className={classes.filterItem} selected={filter === 'Canceled'} onClick={() => this.setFilter('Canceled')}><ListItemText>Canceled</ListItemText></ListItem>
                         </List>
                     </div>
 
