@@ -6,6 +6,7 @@ import LoadsScreen from "../screens/LoadsScreen";
 import DriversScreen from "../screens/DriversScreen";
 import CreateInvoiceScreen from "../screens/CreateInvoiceScreen";
 import UsersScreen from "../screens/UsersScreen";
+import MyAccountScreen from "../screens/MyAccountScreen";
 
 let Navigation = [
     {
@@ -35,7 +36,7 @@ let Navigation = [
     },
     {
         name: 'My Account',
-        screen: null,
+        screen: MyAccountScreen,
         icon: AccountBox
     },
     {
