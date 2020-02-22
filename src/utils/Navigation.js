@@ -28,11 +28,6 @@ let Navigation = [
         icon: NoteAdd
     },
     {
-        name: 'Sign Document',
-        screen: null,
-        icon: Create
-    },
-    {
         name: 'Users',
         screen: null,
         icon: People
