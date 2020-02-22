@@ -4,6 +4,7 @@ import {Create, Dashboard, LocalShipping, NoteAdd, People, RecentActors, Setting
 import DashboardScreen from "../screens/DashboardScreen";
 import LoadsScreen from "../screens/LoadsScreen";
 import DriversScreen from "../screens/DriversScreen";
+import CreateInvoiceScreen from "../screens/CreateInvoiceScreen";
 
 let Navigation = [
     {
@@ -23,7 +24,7 @@ let Navigation = [
     },
     {
         name: 'Create Invoice',
-        screen: null,
+        screen: CreateInvoiceScreen,
         icon: NoteAdd
     },
     {
