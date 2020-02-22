@@ -7,6 +7,7 @@ import DriversScreen from "../screens/DriversScreen";
 import CreateInvoiceScreen from "../screens/CreateInvoiceScreen";
 import UsersScreen from "../screens/UsersScreen";
 import MyAccountScreen from "../screens/MyAccountScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 let Navigation = [
     {
@@ -41,7 +42,7 @@ let Navigation = [
     },
     {
         name: 'Settings',
-        screen: null,
+        screen: SettingsScreen,
         icon: Settings
     }
 ];

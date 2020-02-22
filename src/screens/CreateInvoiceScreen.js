@@ -197,7 +197,7 @@ class CreateInvoiceScreen extends React.Component {
                             }}
                         />
 
-                        <Button variant='contained' color='primary' onClick={() =>this.generatePDF()}>Generate Invoice</Button>
+                        <Button style={{marginTop: 20}} variant='contained' color='primary' onClick={() =>this.generatePDF()}>Generate Invoice</Button>
                     </div>
 
                     <div className={classes.previewInvoice}>

@@ -1,4 +1,4 @@
-let MaterialAccountStyles = theme => ({
+let MaterialSettingsStyles = theme => ({
     content: {
         width: '100%',
         height: '100%',
@@ -6,16 +6,18 @@ let MaterialAccountStyles = theme => ({
         flexDirection: 'row',
         justifyContent: 'space-around',
         flexWrap: 'wrap',
-        paddingTop: 40
+        paddingTop: 40,
+        paddingBottom: 40
     },
-    accountBox: {
+    settingsCard: {
         width: '80%',
+        height: 'auto',
         backgroundColor: theme.palette.primary.table.main,
-        padding: 10,
         boxShadow: `2px 2px 15px -6px rgba(0, 0, 0, 0.75)`,
+        padding: 10,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-end',
+        flexWrap: 'wrap',
         marginBottom: 40,
         [theme.breakpoints.up('md')]: {
             width: '40%',
@@ -23,7 +25,8 @@ let MaterialAccountStyles = theme => ({
         }
     },
     inputField: {
-        marginBottom: 20
+        marginBottom: 20,
+        marginRight: 10
     },
     textFieldProps: {
         color: theme.palette.text.primary
@@ -31,16 +34,25 @@ let MaterialAccountStyles = theme => ({
     inputColor: {
         color: theme.palette.text.primary
     },
-    saveBtn: {
-        marginTop: 20
+    streetInfo: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap'
     },
-    breakpoint: {
-        flexBasis: '100%',
-        height: 0
+    btnContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end'
     },
-    error: {
-        color: theme.palette.error.main
+    checkBox: {
+        color: theme.palette.text.primary
+    },
+    uploadLabel: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20
     }
 });
 
-export {MaterialAccountStyles};
+export {MaterialSettingsStyles};

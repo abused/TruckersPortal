@@ -6,7 +6,8 @@ let MaterialUserStyles = theme => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        paddingBottom: 40
     },
     filterContainer: {
         width: '70%',

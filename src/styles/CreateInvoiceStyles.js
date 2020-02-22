@@ -72,7 +72,8 @@ let MaterialInvoiceStyles = theme => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'relative'
+        position: 'relative',
+        paddingBottom: 40
     },
     invoiceOptions: {
         width: '80%',
