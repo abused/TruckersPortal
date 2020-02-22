@@ -18,7 +18,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import {AccountCircle} from "@material-ui/icons";
 import {NavStyles, MaterialNavStyles} from './../styles/NavStyles';
 import {defaultTheme} from "./../styles/Theme";
-import {renderNavigation} from "./../utils/Navigation";
+import {renderNavigation, Navigation} from "./../utils/Navigation";
 import clsx from "clsx";
 import DashboardScreen from "./../screens/DashboardScreen";
 
@@ -71,7 +71,11 @@ class PanelPage extends React.Component {
                 transformOrigin={{vertical: 'top'}}
                 className={classes.dropdownMenu}
             >
-                <MenuItem className={classes.menuItems} onClick={() => console.log("Click!")}>My Account</MenuItem>
+                <MenuItem className={classes.menuItems} onClick={() => {
+                    let settingsOpt = Navigation[5];
+                    this.navigate(settingsOpt.screen, settingsOpt.name);
+                    this.setState({userMenu: null})
+                }}>My Account</MenuItem>
                 <MenuItem className={classes.menuItems} onClick={() => console.log("Click!")}>Logout</MenuItem>
             </Menu>
         );
