@@ -1,10 +1,11 @@
 import React from "react";
 import {ListItem, ListItemIcon, ListItemText, Typography} from "@material-ui/core";
-import {Create, Dashboard, LocalShipping, NoteAdd, People, RecentActors, Settings} from "@material-ui/icons";
+import {AccountBox, Dashboard, LocalShipping, NoteAdd, People, RecentActors, Settings} from "@material-ui/icons";
 import DashboardScreen from "../screens/DashboardScreen";
 import LoadsScreen from "../screens/LoadsScreen";
 import DriversScreen from "../screens/DriversScreen";
 import CreateInvoiceScreen from "../screens/CreateInvoiceScreen";
+import UsersScreen from "../screens/UsersScreen";
 
 let Navigation = [
     {
@@ -29,8 +30,13 @@ let Navigation = [
     },
     {
         name: 'Users',
-        screen: null,
+        screen: UsersScreen,
         icon: People
+    },
+    {
+        name: 'My Account',
+        screen: null,
+        icon: AccountBox
     },
     {
         name: 'Settings',

@@ -25,12 +25,10 @@ import {
     Input,
     InputAdornment
 } from "@material-ui/core";
-import MaskedInput from 'react-text-mask';
-import PropTypes from 'prop-types';
 import {defaultTheme} from "../styles/Theme";
 import {MaterialDriversStyles} from "../styles/DriversStyles";
 import {converToMoney} from "../utils/NumberUtils";
-import {TablePaginationActions, rowsPerPage} from "../utils/TableUtils";
+import {TablePaginationActions, rowsPerPage, CustomTextMask} from "../utils/TableUtils";
 
 let driverData = [
     {
@@ -120,7 +118,7 @@ class DriversScreen extends React.Component {
                 <div className={classes.content}>
                     <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={addDriver} onClose={this.toggleAddDriver}>
                         <DialogTitle>
-                            <Typography variant='h6'>Add Driver</Typography>
+                            Add Driver
                             {emptyFields ? <Typography className={classes.errorInput}>Please make sure all fields are filled in!</Typography> : null}
                         </DialogTitle>
                         <DialogContent className={classes.dialogContent}>
@@ -221,25 +219,5 @@ class DriversScreen extends React.Component {
         );
     }
 }
-
-function CustomTextMask(props) {
-    const { inputRef, ...other } = props;
-
-    return (
-        <MaskedInput
-            {...other}
-            ref={ref => {
-                inputRef(ref ? ref.inputElement : null);
-            }}
-            mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-            placeholderChar={'\u2000'}
-            showMask
-        />
-    );
-}
-
-CustomTextMask.propTypes = {
-    inputRef: PropTypes.func.isRequired
-};
 
 export default withStyles(MaterialDriversStyles, {withTheme: true, defaultTheme})(DriversScreen);

@@ -1,6 +1,7 @@
 import React from "react";
 import {IconButton} from "@material-ui/core";
 import {KeyboardArrowLeft, KeyboardArrowRight} from "@material-ui/icons";
+import MaskedInput from 'react-text-mask';
 import PropTypes from "prop-types";
 
 let rowsPerPage = 8;
@@ -34,4 +35,24 @@ TablePaginationActions.propTypes = {
     page: PropTypes.number.isRequired
 };
 
-export {TablePaginationActions, rowsPerPage};
+function CustomTextMask(props) {
+    const { inputRef, ...other } = props;
+
+    return (
+        <MaskedInput
+            {...other}
+            ref={ref => {
+                inputRef(ref ? ref.inputElement : null);
+            }}
+            mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+            placeholderChar={'\u2000'}
+            showMask
+        />
+    );
+}
+
+CustomTextMask.propTypes = {
+    inputRef: PropTypes.func.isRequired
+};
+
+export {TablePaginationActions, rowsPerPage, CustomTextMask};
