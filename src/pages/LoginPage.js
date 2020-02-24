@@ -12,6 +12,8 @@ import {
 import {Redirect} from 'react-router-dom'
 import {defaultTheme} from "./../styles/Theme";
 import {LoginStyles, MaterialLoginStyles} from "../styles/LoginStyles";
+import {inject, observer} from "mobx-react";
+import {authenticateToken, authenticateUser} from "../utils/ServerUtils";
 
 class LoginPage extends React.Component {
 
@@ -20,6 +22,29 @@ class LoginPage extends React.Component {
         password: '',
         incorrectDetails: false,
         loggedIn: false
+    };
+
+    componentDidMount() {
+        authenticateToken(this.props.tokenStore.getToken()).then(result => {
+            console.log(result);
+            if(result)
+                this.setState({loggedIn: true});
+        });
+    }
+
+    login = () => {
+        let {email, password} = this.state;
+        authenticateUser(email, password).then(result => {
+            if(result) {
+                console.log(result);
+                this.props.tokenStore.saveToken(result.data.token);
+                this.setState({loggedIn: true});
+            }else {
+                console.log("Result is Null!!");
+                console.log(result);
+                this.setState({incorrectDetails: true})
+            }
+        });
     };
 
     render() {
@@ -61,7 +86,7 @@ class LoginPage extends React.Component {
                                     onChange={(event) => this.setState({password: event.target.value})}
                                 />
 
-                                <Button variant='contained' color='secondary' className={classes.loginBtn} onClick={() => this.setState({loggedIn: true})}>Login</Button>
+                                <Button variant='contained' color='secondary' className={classes.loginBtn} onClick={this.login}>Login</Button>
                             </form>
                         </CardContent>
                     </Card>
@@ -71,4 +96,4 @@ class LoginPage extends React.Component {
     }
 }
 
-export default withStyles(MaterialLoginStyles, {withTheme: true, defaultTheme})(LoginPage);
+export default withStyles(MaterialLoginStyles, {withTheme: true, defaultTheme})(inject('tokenStore')(observer(LoginPage)));

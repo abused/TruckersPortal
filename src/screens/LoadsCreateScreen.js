@@ -14,6 +14,7 @@ import {
 import {ArrowBack} from "@material-ui/icons";
 import {MaterialLoadsStyles} from "../styles/LoadsStyles";
 import {defaultTheme} from "../styles/Theme";
+import {uploadDocument} from "../utils/FileUtils";
 
 class LoadsCreateScreen extends React.Component {
 
@@ -23,11 +24,20 @@ class LoadsCreateScreen extends React.Component {
         rate: '',
         detention: '',
         status: 'In Progress',
-        driver: ''
+        driver: '',
+        rateCon: null,
+        bol: null
+    };
+
+    addLoad = () => {
+        let {loadNumber, broker, rate, detention, status, driver, rateCon, bol} = this.state;
+        //TODO add load to database then grab load ID from GraphQL, then upload
+        let loadId = 'load-' + Math.floor(100000 + Math.random() * 900000);
+        uploadDocument(loadId, rateCon, bol);
     };
 
     render() {
-        let {loadNumber, broker, rate, detention, status, driver} = this.state;
+        let {loadNumber, broker, rate, detention, status, driver, rateCon, bol} = this.state;
         let {classes} = this.props;
 
         return (
@@ -103,24 +113,25 @@ class LoadsCreateScreen extends React.Component {
                             </Select>
                         </FormControl>
 
-                        <input type='file' id='contained-button-file' accept='image/*,.pdf,.docx' style={{display: 'none'}} />
+                        <input type='file' id='contained-button-file' accept='image/*,.pdf,.docx' style={{display: 'none'}}  onChange={event => this.setState({rateCon: event.target.files[0]})} />
                         <label htmlFor='contained-button-file' className={classes.uploadLabel}>
                             <Button variant='contained' color='primary' component='span'>
                                 Upload Rate Confirmation
                             </Button>
 
-                            <Typography style={{marginLeft: 10}}>No file selected...</Typography>
+                            <Typography style={{marginLeft: 10}}>{rateCon ? rateCon.name : 'No file selected...'}</Typography>
                         </label>
 
-                        <label htmlFor='contained-button-file' className={classes.uploadLabel}>
+                        <input type='file' id='contained-button-file-2' accept='image/*,.pdf,.docx' style={{display: 'none'}}  onChange={event => this.setState({bol: event.target.files[0]})} />
+                        <label htmlFor='contained-button-file-2' className={classes.uploadLabel} >
                             <Button variant='contained' color='secondary' component='span'>
                                 Upload BOL (Optional)
                             </Button>
 
-                            <Typography style={{marginLeft: 10}}>No file selected...</Typography>
+                            <Typography style={{marginLeft: 10}}>{bol ? bol.name : 'No file selected...'}</Typography>
                         </label>
 
-                        <div className={classes.btnContainer}><Button variant='contained' color='secondary' className={classes.submitBtn} onClick={() => console.log('Adding Load')}>Submit</Button></div>
+                        <div className={classes.btnContainer}><Button variant='contained' color='secondary' className={classes.submitBtn} onClick={this.addLoad}>Submit</Button></div>
                     </div>
                 </div>
             </MuiThemeProvider>

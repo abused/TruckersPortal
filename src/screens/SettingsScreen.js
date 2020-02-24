@@ -14,6 +14,7 @@ import {
 import {defaultTheme} from "../styles/Theme";
 import {MaterialSettingsStyles} from "../styles/SettingsStyles";
 import {CustomTextMask} from "../utils/TableUtils";
+import {uploadLogo} from "../utils/FileUtils";
 
 class SettingsScreen extends React.Component {
 
@@ -25,6 +26,7 @@ class SettingsScreen extends React.Component {
         carrierZipCode: '48135',
         carrierEmail: 'truckersportal@gmail.com',
         carrierNumber: '(313) 215-3515',
+        logo: null,
 
         notFactoring: true,
         factoringName: '',
@@ -94,7 +96,7 @@ class SettingsScreen extends React.Component {
     };
 
     render() {
-        let {carrierName, carrierStreet, carrierCity, carrierState, carrierZipCode, carrierNumber, carrierEmail, notFactoring} = this.state;
+        let {carrierName, carrierStreet, carrierCity, carrierState, carrierZipCode, carrierNumber, carrierEmail, notFactoring, logo} = this.state;
         let {classes} = this.props;
 
         return (
@@ -175,17 +177,17 @@ class SettingsScreen extends React.Component {
                             />
                         </div>
 
-                        <input type='file' id='contained-button-file' accept='image/*' style={{display: 'none'}} />
+                        <input type='file' name='file' id='contained-button-file' accept='image/*' style={{display: 'none'}} onChange={event => this.setState({logo: event.target.files[0]})} />
                         <label htmlFor='contained-button-file' className={classes.uploadLabel}>
                             <Button variant='contained' color='secondary' component='span'>
                                 Upload Logo
                             </Button>
 
-                            <Typography style={{marginLeft: 10}}>No file selected...</Typography>
+                            <Typography style={{marginLeft: 10}}>{logo ? logo.name: 'No file selected...'}</Typography>
                         </label>
 
                         <div className={classes.btnContainer}>
-                            <Button color='primary' variant='contained'>Save</Button>
+                            <Button type='submit' color='primary' variant='contained' onClick={() => uploadLogo(logo)}>Save</Button>
                         </div>
                     </div>
 
