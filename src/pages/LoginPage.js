@@ -12,7 +12,7 @@ import {
 import {Redirect} from 'react-router-dom'
 import {defaultTheme} from "./../styles/Theme";
 import {LoginStyles, MaterialLoginStyles} from "../styles/LoginStyles";
-import {authenticateUser, addUser} from "../utils/ServerUtils";
+import {authenticateUser} from "../utils/ServerUtils";
 import {connect} from "react-redux";
 import {setLoggedIn, setToken} from "../redux/reducers/TokenReducer";
 
@@ -26,10 +26,11 @@ class LoginPage extends React.Component {
 
     login = () => {
         let {email, password} = this.state;
+
         authenticateUser(email, password).then(result => {
             if(result.data.authenticateUser) {
                 this.props.setToken(result.data.authenticateUser.token);
-                this.setState({loggedIn: true});
+                this.props.setLoggedIn(true);
             }else {
                 this.setState({incorrectDetails: true})
             }

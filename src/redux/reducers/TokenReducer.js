@@ -26,13 +26,6 @@ export default function(state = initialState, action) {
     switch (action.type) {
         case SET_TOKEN:
             newState.token = action.payload;
-            authenticateToken(action.payload).then(result => {
-                if(result.data.authenticateToken.token) {
-                    localStorage.setItem('token', result.data.authenticateToken.token);
-                    newState.loggedIn = true;
-                }
-            });
-
             return newState;
         case SET_LOGGEDIN:
             newState.loggedIn = action.payload;

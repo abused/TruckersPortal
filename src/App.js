@@ -4,11 +4,20 @@ import {connect} from 'react-redux';
 import LoginPage from "./pages/LoginPage";
 import PanelPage from "./pages/PanelPage";
 import {setToken, setLoggedIn} from "./redux/reducers/TokenReducer";
+import {authenticateToken} from "./utils/ServerUtils";
 
 class App extends React.Component {
 
     componentDidMount() {
-        this.props.setToken(localStorage.getItem('token'));
+        let token = localStorage.getItem('token');
+
+        this.props.setToken(token);
+        authenticateToken(token).then(result => {
+            if(result.data.authenticateToken) {
+                localStorage.setItem('token', result.data.authenticateToken.token);
+                this.props.setLoggedIn(true);
+            }
+        });
     }
 
     render() {
