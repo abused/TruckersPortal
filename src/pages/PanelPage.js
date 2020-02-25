@@ -14,6 +14,7 @@ import {
     CssBaseline,
     MuiThemeProvider
 } from "@material-ui/core";
+import {Redirect} from 'react-router-dom'
 import MenuIcon from '@material-ui/icons/Menu';
 import {AccountCircle} from "@material-ui/icons";
 import {NavStyles, MaterialNavStyles} from './../styles/NavStyles';
@@ -21,6 +22,9 @@ import {defaultTheme} from "./../styles/Theme";
 import {renderNavigation, Navigation} from "./../utils/Navigation";
 import clsx from "clsx";
 import DashboardScreen from "./../screens/DashboardScreen";
+import {authenticateToken} from "../utils/ServerUtils";
+import {connect} from "react-redux";
+import {setLoggedIn, setToken} from "../redux/reducers/TokenReducer";
 
 class PanelPage extends React.Component {
 
@@ -58,6 +62,10 @@ class PanelPage extends React.Component {
     renderUserMenu = () => {
         let {userMenu} = this.state;
         let {classes} = this.props;
+
+        if(!this.props.tokenState.loggedIn) {
+            return <Redirect to='/' />;
+        }
 
         return (
             <Menu
@@ -153,4 +161,13 @@ class PanelPage extends React.Component {
     }
 }
 
-export default withStyles(MaterialNavStyles, {withTheme: true, defaultTheme})(PanelPage);
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+
+export default withStyles(MaterialNavStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps, {
+    setToken,
+    setLoggedIn
+})(PanelPage));

@@ -1,5 +1,7 @@
-import {checkTokenQuery, loginQuery} from "./GraphQLQueries";
-let URL = window.location.href.replace('/panel', '') + '/graphql';
+import {checkTokenQuery, loginQuery, addUserQuery} from "./GraphQLQueries";
+//let URL = window.location.href.replace('/panel', '') + '/graphql';
+//Test API Server
+let URL = 'https://cors-anywhere.herokuapp.com/http://172.106.202.159/graphql';
 
 function authenticateToken(token) {
     return fetchQuery(checkTokenQuery, {token}).then(handleResponse);
@@ -7,6 +9,10 @@ function authenticateToken(token) {
 
 function authenticateUser(email, password) {
     return fetchQuery(loginQuery, {email, password}).then(handleResponse);
+}
+
+function addUser(firstName, lastName, email, phoneNumber, permissions, password) {
+    return fetchQuery(addUserQuery, {token: 'EIS9Zy5a4GiprK3kryR78ClkSNBvSQxPMyF8SaWuxJ0Hg3B52dX954PxVzTLP1tf', firstName, lastName, email, phoneNumber, permissions, password}).then(handleResponse);
 }
 
 async function fetchQuery(query, variables) {
@@ -28,4 +34,4 @@ function handleResponse(response) {
     });
 }
 
-export {authenticateToken, authenticateUser};
+export {authenticateToken, authenticateUser, addUser};

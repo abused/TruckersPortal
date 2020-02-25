@@ -1,22 +1,35 @@
 import React from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import {Provider} from "mobx-react";
+import {connect} from 'react-redux';
 import LoginPage from "./pages/LoginPage";
 import PanelPage from "./pages/PanelPage";
-import TokenStore from "./mobx/TokenStore";
+import {setToken, setLoggedIn} from "./redux/reducers/TokenReducer";
 
-export default class App extends React.Component {
+class App extends React.Component {
+
+    componentDidMount() {
+        this.props.setToken(localStorage.getItem('token'));
+    }
 
     render() {
         return (
-            <Provider tokenStore={TokenStore}>
-                <Router>
-                    <Switch>
-                        <Route path='/' component={LoginPage} exact />
-                        <Route path='/panel' component={PanelPage} exact />
-                    </Switch>
-                </Router>
-            </Provider>
+            <Router>
+                <Switch>
+                    <Route path='/' component={LoginPage} exact />
+                    <Route path='/panel' component={PanelPage} exact />
+                </Switch>
+            </Router>
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+
+export default connect(mapStateToProps, {
+    setToken,
+    setLoggedIn
+})(App);

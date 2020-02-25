@@ -12,46 +12,35 @@ import {
 import {Redirect} from 'react-router-dom'
 import {defaultTheme} from "./../styles/Theme";
 import {LoginStyles, MaterialLoginStyles} from "../styles/LoginStyles";
-import {inject, observer} from "mobx-react";
-import {authenticateToken, authenticateUser} from "../utils/ServerUtils";
+import {authenticateUser, addUser} from "../utils/ServerUtils";
+import {connect} from "react-redux";
+import {setLoggedIn, setToken} from "../redux/reducers/TokenReducer";
 
 class LoginPage extends React.Component {
 
     state = {
         email: '',
         password: '',
-        incorrectDetails: false,
-        loggedIn: false
+        incorrectDetails: false
     };
-
-    componentDidMount() {
-        authenticateToken(this.props.tokenStore.getToken()).then(result => {
-            console.log(result);
-            if(result)
-                this.setState({loggedIn: true});
-        });
-    }
 
     login = () => {
         let {email, password} = this.state;
         authenticateUser(email, password).then(result => {
-            if(result) {
-                console.log(result);
-                this.props.tokenStore.saveToken(result.data.token);
+            if(result.data.authenticateUser) {
+                this.props.setToken(result.data.authenticateUser.token);
                 this.setState({loggedIn: true});
             }else {
-                console.log("Result is Null!!");
-                console.log(result);
                 this.setState({incorrectDetails: true})
             }
         });
     };
 
     render() {
-        let {email, password, incorrectDetails, loggedIn} = this.state;
+        let {email, password, incorrectDetails} = this.state;
         let {classes} = this.props;
 
-        if(loggedIn) {
+        if(this.props.tokenState.loggedIn) {
             return <Redirect to='/panel' />
         }
 
@@ -96,4 +85,13 @@ class LoginPage extends React.Component {
     }
 }
 
-export default withStyles(MaterialLoginStyles, {withTheme: true, defaultTheme})(inject('tokenStore')(observer(LoginPage)));
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+
+export default withStyles(MaterialLoginStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps, {
+    setToken,
+    setLoggedIn
+})(LoginPage));

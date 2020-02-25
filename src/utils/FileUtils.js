@@ -1,4 +1,6 @@
-let URL = window.location.href.replace('/panel', '') + '/upload';
+//let URL = window.location.href.replace('/panel', '') + '/upload';
+//Test API Server
+let URL = 'https://cors-anywhere.herokuapp.com/http://172.106.202.159/upload';
 
 function uploadDocument(loadId, rateCon, bol) {
 
