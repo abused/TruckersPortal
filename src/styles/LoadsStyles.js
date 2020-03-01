@@ -45,7 +45,8 @@ let MaterialLoadsStyles = theme => ({
     loadsTable: {
         width: '70%',
         backgroundColor: theme.palette.primary.table.main,
-        boxShadow: `2px 2px 15px -6px rgba(0, 0, 0, 0.75)`
+        boxShadow: `2px 2px 15px -6px rgba(0, 0, 0, 0.75)`,
+        marginBottom: 40
     },
     completeCell: {
         backgroundColor: theme.palette.success.main
@@ -82,11 +83,6 @@ let MaterialLoadsStyles = theme => ({
     inputLabel: {
       color: theme.palette.text.primary
     },
-    selectMenu: {
-        '& .MuiMenu-paper':{
-            backgroundColor: theme.palette.background.default
-        }
-    },
     selectItem: {
         '&:hover': {
             backgroundColor: 'rgba(0, 0, 0, 0.2)'
@@ -94,7 +90,7 @@ let MaterialLoadsStyles = theme => ({
         '&.Mui-selected': {
             backgroundColor: 'transparent',
             '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                backgroundColor: 'rgba(0, 0, 0, 0.2)'
             }
         }
     },
@@ -111,6 +107,9 @@ let MaterialLoadsStyles = theme => ({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 20
+    },
+    checkBox: {
+        color: theme.palette.text.primary
     },
     btnContainer: {
         width: '100%',

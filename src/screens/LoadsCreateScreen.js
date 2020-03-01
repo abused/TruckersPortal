@@ -9,12 +9,14 @@ import {
     Button,
     Typography,
     IconButton,
-    MuiThemeProvider
+    MuiThemeProvider, Checkbox, FormControlLabel
 } from "@material-ui/core";
 import {ArrowBack} from "@material-ui/icons";
+import {connect} from "react-redux";
 import {MaterialLoadsStyles} from "../styles/LoadsStyles";
 import {defaultTheme} from "../styles/Theme";
 import {uploadDocument} from "../utils/FileUtils";
+import {addLoad, getDrivers} from "../utils/ServerUtils";
 
 class LoadsCreateScreen extends React.Component {
 
@@ -25,19 +27,37 @@ class LoadsCreateScreen extends React.Component {
         detention: '',
         status: 'In Progress',
         driver: '',
+        paid: false,
         rateCon: null,
-        bol: null
+        bol: null,
+        drivers: []
     };
 
+    componentDidMount() {
+        let token = this.props.tokenState.token;
+
+        if(token) {
+            getDrivers(token).then(data => {
+                this.setState({drivers: data.data.getDrivers ? data.data.getDrivers : []});
+            });
+        }
+    }
+
     addLoad = () => {
-        let {loadNumber, broker, rate, detention, status, driver, rateCon, bol} = this.state;
-        //TODO add load to database then grab load ID from GraphQL, then upload
-        let loadId = 'load-' + Math.floor(100000 + Math.random() * 900000);
-        uploadDocument(loadId, rateCon, bol);
+        let {loadNumber, broker, rate, detention, status, driver, paid, rateCon, bol} = this.state;
+        let token = this.props.tokenState.token;
+
+        if(token) {
+            addLoad(token, broker, loadNumber, rate, detention, driver, status, paid).then(data => {
+                let loadId = data.data.addLoad.id;
+                uploadDocument(loadId, rateCon, bol);
+                this.props.handleCreateLoad();
+            });
+        }
     };
 
     render() {
-        let {loadNumber, broker, rate, detention, status, driver, rateCon, bol} = this.state;
+        let {loadNumber, broker, rate, detention, status, driver, paid, rateCon, bol, drivers} = this.state;
         let {classes} = this.props;
 
         return (
@@ -97,21 +117,27 @@ class LoadsCreateScreen extends React.Component {
 
                         <FormControl variant='filled' className={classes.inputField} fullWidth>
                             <InputLabel className={classes.inputLabel}>Driver</InputLabel>
-                            <Select value={driver} MenuProps={{className: classes.selectMenu}} onChange={(event) => this.setState({driver: event.target.value})}>
-                                <MenuItem className={classes.selectItem} value='Driver 1'>Driver 1</MenuItem>
-                                <MenuItem className={classes.selectItem} value='Driver 2'>Driver 2</MenuItem>
-                                <MenuItem className={classes.selectItem} value='Driver 3'>Driver 3</MenuItem>
+                            <Select value={driver} onChange={(event) => this.setState({driver: event.target.value})}>
+                                {drivers.map(driver => (<MenuItem key={driver.name} className={classes.selectItem} value={driver.id}>{driver.name}</MenuItem>))}
                             </Select>
                         </FormControl>
 
                         <FormControl variant='filled' className={classes.inputField} fullWidth>
                             <InputLabel className={classes.inputLabel}>Status</InputLabel>
-                            <Select value={status} MenuProps={{className: classes.selectMenu}} onChange={(event) => this.setState({status: event.target.value})}>
+                            <Select value={status} onChange={(event) => this.setState({status: event.target.value})}>
                                 <MenuItem className={classes.selectItem} value='In Progress'>In Progress</MenuItem>
                                 <MenuItem className={classes.selectItem} value='Complete'>Complete</MenuItem>
                                 <MenuItem className={classes.selectItem} value='Canceled'>Canceled</MenuItem>
                             </Select>
                         </FormControl>
+
+                        <FormControlLabel
+                            style={{marginBottom: 10}}
+                            control={
+                                <Checkbox className={classes.checkBox} checked={paid} onChange={() => this.setState({paid: !paid})} />
+                            }
+                            label='Has Load Been Paid?'
+                        />
 
                         <input type='file' id='contained-button-file' accept='image/*,.pdf,.docx' style={{display: 'none'}}  onChange={event => this.setState({rateCon: event.target.files[0]})} />
                         <label htmlFor='contained-button-file' className={classes.uploadLabel}>
@@ -122,7 +148,7 @@ class LoadsCreateScreen extends React.Component {
                             <Typography style={{marginLeft: 10}}>{rateCon ? rateCon.name : 'No file selected...'}</Typography>
                         </label>
 
-                        <input type='file' id='contained-button-file-2' accept='image/*,.pdf,.docx' style={{display: 'none'}}  onChange={event => this.setState({bol: event.target.files[0]})} />
+                        <input type='file' id='contained-button-file-2' accept='image/*,.pdf' style={{display: 'none'}}  onChange={event => this.setState({bol: event.target.files[0]})} />
                         <label htmlFor='contained-button-file-2' className={classes.uploadLabel} >
                             <Button variant='contained' color='secondary' component='span'>
                                 Upload BOL (Optional)
@@ -139,4 +165,9 @@ class LoadsCreateScreen extends React.Component {
     }
 }
 
-export default withStyles(MaterialLoadsStyles, {withTheme: true, defaultTheme})(LoadsCreateScreen)
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+export default withStyles(MaterialLoadsStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps)(LoadsCreateScreen))

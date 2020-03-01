@@ -5,7 +5,7 @@ import {
     MuiThemeProvider,
     Button,
     Typography,
-    TextField
+    TextField, Checkbox, FormControlLabel
 } from "@material-ui/core";
 import MaterialTable from "material-table";
 import {Done, Close, Edit, DeleteForever, AddBox} from "@material-ui/icons";
@@ -13,15 +13,7 @@ import {defaultTheme} from "../styles/Theme";
 import {MaterialInvoiceStyles, PreviewInvoiceStyles} from "../styles/CreateInvoiceStyles";
 import {makeInvoicePDF} from "../utils/InvoiceUtils";
 import {converToMoney} from "../utils/NumberUtils";
-
-let companyInfo = {
-    street: '23300 Northline Rd',
-    city: 'Taylor',
-    state: 'MI',
-    zipCode: '48180',
-    phoneNumber: '(313) 325-1248',
-    email: 'testcompanyemail@gmail.com'
-};
+import {connect} from "react-redux";
 
 class CreateInvoiceScreen extends React.Component {
 
@@ -34,7 +26,8 @@ class CreateInvoiceScreen extends React.Component {
         billedToState: '',
         billedToZip: '',
         invoiceTotal: 0,
-        itemsData: []
+        itemsData: [],
+        useFactoringInfo: false
     };
 
     generatePDF = () => {
@@ -47,8 +40,67 @@ class CreateInvoiceScreen extends React.Component {
         this.setState({invoiceNumber: Math.floor(100000 + Math.random() * 900000), loadNumber: '', billedToName: '', billedToStreet: '', billedToCity: '', billedToState: '', billedToZip: '', invoiceTotal: 0, itemsData: []});
     };
 
+    renderBilledTo = () => {
+        let {billedToName, billedToStreet, billedToCity, billedToState, billedToZip} = this.state;
+        let {classes} = this.props;
+
+        return (
+            <div>
+                <TextField
+                    className={classes.inputField}
+                    InputLabelProps={{className: classes.textFieldProps}}
+                    label='Company Name'
+                    value={billedToName}
+                    id='standard-basic'
+                    variant='outlined'
+                    onChange={(event) => this.setState({billedToName: event.target.value})}
+                />
+
+                <TextField
+                    className={classes.inputField}
+                    InputLabelProps={{className: classes.textFieldProps}}
+                    label='Street'
+                    value={billedToStreet}
+                    id='standard-basic'
+                    variant='outlined'
+                    onChange={(event) => this.setState({billedToStreet: event.target.value})}
+                />
+
+                <TextField
+                    className={classes.inputField}
+                    InputLabelProps={{className: classes.textFieldProps}}
+                    label='City'
+                    value={billedToCity}
+                    id='standard-basic'
+                    variant='outlined'
+                    onChange={(event) => this.setState({billedToCity: event.target.value})}
+                />
+
+                <TextField
+                    className={classes.inputField}
+                    InputLabelProps={{className: classes.textFieldProps}}
+                    label='State'
+                    value={billedToState}
+                    id='standard-basic'
+                    variant='outlined'
+                    onChange={(event) => this.setState({billedToState: event.target.value})}
+                />
+
+                <TextField
+                    className={classes.inputField}
+                    InputLabelProps={{className: classes.textFieldProps}}
+                    label='Zip Code'
+                    value={billedToZip}
+                    id='standard-basic'
+                    variant='outlined'
+                    onChange={(event) => this.setState({billedToZip: event.target.value})}
+                />
+            </div>
+        );
+    };
+
     render() {
-        let {invoiceNumber, loadNumber, billedToName, billedToStreet, billedToCity, billedToState, billedToZip, itemsData, invoiceTotal} = this.state;
+        let {invoiceNumber, loadNumber, billedToName, billedToStreet, billedToCity, billedToState, billedToZip, itemsData, invoiceTotal, useFactoringInfo} = this.state;
         let {classes} = this.props;
         let dateObj = new Date();
         let date = ((dateObj.getMonth() > 8) ? (dateObj.getMonth() + 1) : ('0' + (dateObj.getMonth() + 1))) + '/' + ((dateObj.getDate() > 9) ? dateObj.getDate() : ('0' + dateObj.getDate())) + '/' + dateObj.getFullYear();
@@ -70,57 +122,18 @@ class CreateInvoiceScreen extends React.Component {
                         />
 
                         <Typography variant='h5' style={{marginBottom: 20}}>Billed To:</Typography>
-                        <div>
-                            <TextField
-                                className={classes.inputField}
-                                InputLabelProps={{className: classes.textFieldProps}}
-                                label='Company Name'
-                                value={billedToName}
-                                id='standard-basic'
-                                variant='outlined'
-                                onChange={(event) => this.setState({billedToName: event.target.value})}
-                            />
+                        {
+                            this.props.carrierState.factoring ?
+                                <FormControlLabel
+                                    style={{marginBottom: 20, marginLeft: 5}}
+                                    control={
+                                        <Checkbox className={classes.checkBox} checked={useFactoringInfo} onChange={() => this.setState({useFactoringInfo: !useFactoringInfo})} />
+                                    }
+                                    label='Use Factoring Company?'
+                                /> : null
+                        }
 
-                            <TextField
-                                className={classes.inputField}
-                                InputLabelProps={{className: classes.textFieldProps}}
-                                label='Street'
-                                value={billedToStreet}
-                                id='standard-basic'
-                                variant='outlined'
-                                onChange={(event) => this.setState({billedToStreet: event.target.value})}
-                            />
-
-                            <TextField
-                                className={classes.inputField}
-                                InputLabelProps={{className: classes.textFieldProps}}
-                                label='City'
-                                value={billedToCity}
-                                id='standard-basic'
-                                variant='outlined'
-                                onChange={(event) => this.setState({billedToCity: event.target.value})}
-                            />
-
-                            <TextField
-                                className={classes.inputField}
-                                InputLabelProps={{className: classes.textFieldProps}}
-                                label='State'
-                                value={billedToState}
-                                id='standard-basic'
-                                variant='outlined'
-                                onChange={(event) => this.setState({billedToState: event.target.value})}
-                            />
-
-                            <TextField
-                                className={classes.inputField}
-                                InputLabelProps={{className: classes.textFieldProps}}
-                                label='Zip Code'
-                                value={billedToZip}
-                                id='standard-basic'
-                                variant='outlined'
-                                onChange={(event) => this.setState({billedToZip: event.target.value})}
-                            />
-                        </div>
+                        {useFactoringInfo ? null : this.renderBilledTo()}
 
                         <MaterialTable
                             title='Invoice Items'
@@ -227,12 +240,16 @@ class CreateInvoiceScreen extends React.Component {
                             <div style={PreviewInvoiceStyles.parties}>
                                 <div>
                                     <h4>BILLED TO</h4>
-                                    <p>{billedToName}<br />{billedToStreet}<br />{billedToCity}, {billedToState} {billedToZip}</p>
+                                    {
+                                        useFactoringInfo ?
+                                            <p>{this.props.carrierState.factoringName}<br />{this.props.carrierState.factoringStreet}<br />{this.props.carrierState.factoringCity}, {this.props.carrierState.factoringState} {this.props.carrierState.factoringZip}</p> :
+                                            <p>{billedToName}<br />{billedToStreet}<br />{billedToCity}, {billedToState} {billedToZip}</p>
+                                    }
                                 </div>
 
                                 <div>
-                                    <h4>Company Name</h4>
-                                    <p>{companyInfo.street}<br />{companyInfo.city}, {companyInfo.state} {companyInfo.zipCode}<br />{companyInfo.phoneNumber}<br />{companyInfo.email}</p>
+                                    <h4>{this.props.carrierState.name}</h4>
+                                    <p>{this.props.carrierState.street}<br />{this.props.carrierState.city}, {this.props.carrierState.state} {this.props.carrierState.zipCode}<br />{this.props.carrierState.phoneNumber}<br />{this.props.carrierState.email}</p>
                                 </div>
                             </div>
 
@@ -263,4 +280,9 @@ class CreateInvoiceScreen extends React.Component {
     }
 }
 
-export default withStyles(MaterialInvoiceStyles, {withTheme: true, defaultTheme})(CreateInvoiceScreen);
+const mapStateToProps = state => {
+    return {
+        carrierState: state.carrier
+    };
+};
+export default withStyles(MaterialInvoiceStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps)(CreateInvoiceScreen));

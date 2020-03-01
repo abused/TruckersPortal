@@ -14,68 +14,42 @@ import {
     List,
     ListItem,
     ListItemText,
-    Button
-} from "@material-ui/core";
+    Button,
+    Snackbar
+} from "@material-ui/core"
+import {Alert} from "@material-ui/lab";
+import {connect} from "react-redux";
 import {defaultTheme} from "../styles/Theme";
 import {MaterialLoadsStyles} from "../styles/LoadsStyles";
 import {converToMoney} from "../utils/NumberUtils";
 import {TablePaginationActions, rowsPerPage} from "../utils/TableUtils";
 import LoadsCreateScreen from "./LoadsCreateScreen";
-
-let loads = [
-    {
-        loadNumber: '6876760',
-        brokerName: 'XPO Logistics',
-        rate: '3000',
-        driver: 'Driver 1',
-        detention: '0',
-        status: 'Complete'
-    },
-    {
-        loadNumber: '5158351',
-        brokerName: 'TQL',
-        rate: '2200',
-        driver: 'Driver 2',
-        detention: '350',
-        status: 'In Progress'
-    },
-    {
-        loadNumber: '2147251',
-        brokerName: 'TQL',
-        rate: '1200',
-        driver: 'Driver 1',
-        detention: '0',
-        status: 'Canceled'
-    },
-    {
-        loadNumber: '354183',
-        brokerName: 'LandStar',
-        rate: '3600',
-        driver: 'Driver 1',
-        detention: '0',
-        status: 'Complete'
-    },
-    {
-        loadNumber: '2145156',
-        brokerName: 'AMZN Logistics',
-        rate: '2600',
-        driver: 'Driver 2',
-        detention: '0',
-        status: 'Complete'
-    }
-];
+import {getLoads} from "../utils/ServerUtils";
 
 class LoadsScreen extends React.Component {
 
     state = {
         page: 0,
         filter: 'All',
-        addLoad: false
+        addLoad: false,
+        loads: [],
+        showSuccess: false,
+        loaded: false
     };
 
     constructor(props) {
         super(props);
         this.handleCreateLoad = this.handleCreateLoad.bind(this);
+    }
+
+    componentDidMount() {
+        let token = this.props.tokenState.token;
+
+        if(token) {
+            getLoads(token).then(data => this.setState({loads: data.data.getLoads ? data.data.getLoads : []}));
+        }
+
+        this.setState({loaded: true});
     }
 
     handleChangePage = (event, newPage) => {
@@ -87,7 +61,7 @@ class LoadsScreen extends React.Component {
     };
 
     filterData = () => {
-        let {filter} = this.state;
+        let {filter, loads} = this.state;
 
         return loads.filter((load) => {
             if(filter === 'All')
@@ -98,15 +72,24 @@ class LoadsScreen extends React.Component {
     };
 
     handleCreateLoad = () => {
-        this.setState({addLoad: !this.state.addLoad});
+        let {addLoad} = this.state;
+        this.setState({addLoad: !addLoad, showSuccess: addLoad});
+    };
+
+    closeSnackbar = () => {
+        this.setState({showSuccess: false});
     };
 
     render() {
-        let {page, addLoad, filter} = this.state;
+        let {page, addLoad, filter, loads, showSuccess, loaded} = this.state;
         let {classes} = this.props;
         let emptyRows = rowsPerPage - Math.min(rowsPerPage, loads.length - page * rowsPerPage);
         if(addLoad) {
             return <LoadsCreateScreen  handleCreateLoad={this.handleCreateLoad}/>;
+        }
+
+        if(!loaded) {
+            return <div className='loaderContainer'><div className='loader'>Loading...</div></div>;
         }
 
         return (
@@ -169,10 +152,24 @@ class LoadsScreen extends React.Component {
                             </TableFooter>
                         </Table>
                     </TableContainer>
+
+                    <Snackbar
+                        open={showSuccess}
+                        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                        onClose={this.closeSnackbar}
+                        autoHideDuration={6000}
+                    >
+                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Added Load!</Alert>
+                    </Snackbar>
                 </div>
             </MuiThemeProvider>
         );
     }
 }
 
-export default withStyles(MaterialLoadsStyles, {withTheme: true, defaultTheme})(LoadsScreen);
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+export default withStyles(MaterialLoadsStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps)(LoadsScreen));

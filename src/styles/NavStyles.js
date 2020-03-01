@@ -29,7 +29,10 @@ let MaterialNavStyles = theme => ({
         width: sideNavWidth,
         flexShrink: 0,
         whiteSpace: 'nowrap',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        '& .MuiDrawer-paper': {
+            backgroundColor: theme.palette.primary.navBar.main
+        }
     },
     sideNavOpen: {
         width: sideNavWidth,
@@ -112,6 +115,12 @@ let MaterialNavStyles = theme => ({
         }
     },
     menuItems: {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.2)'
+        }
+    },
+    logoutMenuItem: {
+        color: theme.palette.error.main,
         '&:hover': {
             backgroundColor: 'rgba(0, 0, 0, 0.2)'
         }

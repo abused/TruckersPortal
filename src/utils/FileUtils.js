@@ -1,6 +1,7 @@
 //let URL = window.location.href.replace('/panel', '') + '/upload';
 //Test API Server
 let URL = 'https://cors-anywhere.herokuapp.com/http://172.106.202.159/upload';
+let FILES_URL = 'https://cors-anywhere.herokuapp.com/http://172.106.202.159/files/';
 
 function uploadDocument(loadId, rateCon, bol) {
 
@@ -11,12 +12,12 @@ function uploadDocument(loadId, rateCon, bol) {
 
     if(bol) {
         let extension = bol.name.split('.');
-        uploadFile(new File([bol], loadId + '-bol.' + extension[extension.length -1], {type: bol.type})).then(d => console.log("success!"));
+        uploadFile(new File([bol], loadId + '-bol.' + extension[extension.length -1], {type: bol.type}));
     }
 }
 
 async function uploadLogo(logo) {
-    return await uploadFile(new File([logo], 'logo.' + logo.type.split('/')[1], {type: logo.type}));
+    return await uploadFile(new File([logo], 'logo.png', {type: logo.type}));
 }
 
 async function uploadFile(file) {
@@ -31,4 +32,4 @@ async function uploadFile(file) {
     return await fetch(URL, options);
 }
 
-export {uploadFile, uploadDocument, uploadLogo};
+export {FILES_URL, uploadFile, uploadDocument, uploadLogo};

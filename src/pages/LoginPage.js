@@ -12,9 +12,10 @@ import {
 import {Redirect} from 'react-router-dom'
 import {defaultTheme} from "./../styles/Theme";
 import {LoginStyles, MaterialLoginStyles} from "../styles/LoginStyles";
-import {authenticateUser} from "../utils/ServerUtils";
+import {authenticateUser, getCarrierData} from "../utils/ServerUtils";
 import {connect} from "react-redux";
-import {setLoggedIn, setToken} from "../redux/reducers/TokenReducer";
+import {setLoggedIn, setToken, setUserData} from "../redux/reducers/TokenReducer";
+import {setCarrierData} from "../redux/reducers/CarrierReducer";
 
 class LoginPage extends React.Component {
 
@@ -24,13 +25,26 @@ class LoginPage extends React.Component {
         incorrectDetails: false
     };
 
-    login = () => {
+    login = (event) => {
         let {email, password} = this.state;
+        event.preventDefault();
 
         authenticateUser(email, password).then(result => {
             if(result.data.authenticateUser) {
                 this.props.setToken(result.data.authenticateUser.token);
                 this.props.setLoggedIn(true);
+
+                this.props.setUserData({
+                    id: result.data.authenticateUser.id,
+                    firstName: result.data.authenticateUser.firstName,
+                    lastName: result.data.authenticateUser.lastName,
+                    email: result.data.authenticateUser.email,
+                    phoneNumber: result.data.authenticateUser.phoneNumber
+                });
+
+                getCarrierData(result.data.authenticateUser.token).then(data => {
+                    this.props.setCarrierData(data.data.getCarrierProfile);
+                });
             }else {
                 this.setState({incorrectDetails: true})
             }
@@ -54,7 +68,7 @@ class LoginPage extends React.Component {
                             <Typography variant='h4' color='textSecondary' noWrap>Login</Typography>
                             {incorrectDetails ? <Typography variant='h6' color='error' noWrap={false}>Invalid Email or Password</Typography> : null}
 
-                            <form className={classes.loginForm}>
+                            <form className={classes.loginForm} onSubmit={this.login}>
                                 <TextField
                                     className={classes.textField}
                                     inputProps={{className: classes.textProps}}
@@ -76,7 +90,7 @@ class LoginPage extends React.Component {
                                     onChange={(event) => this.setState({password: event.target.value})}
                                 />
 
-                                <Button variant='contained' color='secondary' className={classes.loginBtn} onClick={this.login}>Login</Button>
+                                <Button type='submit' variant='contained' color='secondary' className={classes.loginBtn}>Login</Button>
                             </form>
                         </CardContent>
                     </Card>
@@ -88,11 +102,14 @@ class LoginPage extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        tokenState: state.token
+        tokenState: state.token,
+        carrierState: state.carrier
     };
 };
 
 export default withStyles(MaterialLoginStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps, {
     setToken,
-    setLoggedIn
+    setLoggedIn,
+    setUserData,
+    setCarrierData
 })(LoginPage));

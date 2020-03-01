@@ -22,6 +22,7 @@ let MaterialLoginStyles = theme => ({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
+        backgroundColor: theme.palette.primary.navBar.main,
         [theme.breakpoints.up('md')]: {
             width: '20%',
         }

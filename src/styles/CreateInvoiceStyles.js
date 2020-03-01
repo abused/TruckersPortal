@@ -106,6 +106,9 @@ let MaterialInvoiceStyles = theme => ({
     previewTitle: {
         borderBottom: `3px solid ${theme.palette.primary.main}`,
         marginBottom: 20
+    },
+    checkBox: {
+        color: theme.palette.text.primary
     }
 });
 

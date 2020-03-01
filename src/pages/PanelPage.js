@@ -22,7 +22,6 @@ import {defaultTheme} from "./../styles/Theme";
 import {renderNavigation, Navigation} from "./../utils/Navigation";
 import clsx from "clsx";
 import DashboardScreen from "./../screens/DashboardScreen";
-import {authenticateToken} from "../utils/ServerUtils";
 import {connect} from "react-redux";
 import {setLoggedIn, setToken} from "../redux/reducers/TokenReducer";
 
@@ -59,6 +58,10 @@ class PanelPage extends React.Component {
         this.setState({Screen, screenName});
     };
 
+    logout = () => {
+        this.props.setLoggedIn(false);
+    };
+
     renderUserMenu = () => {
         let {userMenu} = this.state;
         let {classes} = this.props;
@@ -75,8 +78,8 @@ class PanelPage extends React.Component {
                 onClose={() => this.setState({userMenu: null})}
                 elevation={0}
                 getContentAnchorEl={null}
-                anchorOrigin={{vertical: 'bottom'}}
-                transformOrigin={{vertical: 'top'}}
+                anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+                transformOrigin={{vertical: 'top', horizontal: 'left'}}
                 className={classes.dropdownMenu}
             >
                 <MenuItem className={classes.menuItems} onClick={() => {
@@ -84,7 +87,7 @@ class PanelPage extends React.Component {
                     this.navigate(settingsOpt.screen, settingsOpt.name);
                     this.setState({userMenu: null})
                 }}>My Account</MenuItem>
-                <MenuItem className={classes.menuItems} onClick={() => console.log("Click!")}>Logout</MenuItem>
+                <MenuItem className={classes.logoutMenuItem} onClick={this.logout}>Logout</MenuItem>
             </Menu>
         );
     };
@@ -110,7 +113,7 @@ class PanelPage extends React.Component {
                                         onClick={(event) => this.setState({userMenu: event.currentTarget})}>
                                     <AccountCircle style={{marginRight: 5}}/>
                                     <Typography variant='h6' noWrap color='inherit'>
-                                        Mohammad
+                                        {this.props.tokenState.user.firstName}
                                     </Typography>
                                 </Button>
                             </div>
@@ -141,8 +144,8 @@ class PanelPage extends React.Component {
                         }}
                     >
                         <Typography className={classes.header} variant='h6' color='textSecondary'>
-                            <img className={clsx(classes.logo, {[classes.logoShift]: !sideNavOpen})} src='/assets/images/logo.svg' alt=''/>
-                            {sideNavOpen ? ' Truckers Portal' : null}
+                            <img className={clsx(classes.logo, {[classes.logoShift]: !sideNavOpen})} src={this.props.carrierState.logo} alt=''/>
+                            {sideNavOpen ? this.props.carrierState.name ? this.props.carrierState.name : ' Truckers Portal' : null}
                         </Typography>
                         <Divider />
 
@@ -163,7 +166,8 @@ class PanelPage extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        tokenState: state.token
+        tokenState: state.token,
+        carrierState: state.carrier
     };
 };
 

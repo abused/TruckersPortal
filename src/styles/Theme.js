@@ -23,6 +23,9 @@ let defaultTheme = createMuiTheme({
             },
             table: {
                 main: '#FFFFFF'
+            },
+            navBar: {
+                main: '#343F4A'
             }
         },
         secondary: {
@@ -38,7 +41,7 @@ let defaultTheme = createMuiTheme({
             main: '#4caf50'
         },
         background: {
-            paper: '#343F4A',
+            paper: '#eceff1',
             default: '#eceff1'
         },
         text: {

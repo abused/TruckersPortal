@@ -14,47 +14,37 @@ import {
 } from "@material-ui/core";
 import {LocalShipping, PlaylistAddCheck, MoneyOff, AccountBalanceWallet} from "@material-ui/icons";
 import clsx from "clsx";
+import {connect} from "react-redux";
 import {MaterialDashboardStyles} from "../styles/DashboardStyles";
 import {defaultTheme} from "../styles/Theme";
 import {converToMoney} from "../utils/NumberUtils";
-
-let driverData = [
-    {
-        name: 'Driver 1',
-        loadsCompleted: '2',
-        payCut: '20%',
-        earnings: '5400',
-        phoneNumber: '(313) 315-1514',
-        status: 'Driving'
-    },
-    {
-        name: 'Driver 2',
-        loadsCompleted: '0',
-        payCut: '20%',
-        earnings: '0',
-        phoneNumber: '(734) 321-6528',
-        status: 'Sitting'
-    },
-    {
-        name: 'Driver 3',
-        loadsCompleted: '1',
-        payCut: '15%',
-        earnings: '2200',
-        phoneNumber: '(313) 315-1514',
-        status: 'Driving'
-    },
-    {
-        name: 'Driver 4',
-        loadsCompleted: '6',
-        payCut: '20%',
-        earnings: '16350',
-        phoneNumber: '(734) 321-1258',
-        status: 'Driving'
-    }
-];
+import {getAnnualRevenue, getCompletedLoads, getCurrentLoads, getDrivers, getUnpaidRevenue} from "../utils/ServerUtils";
 
 class DashboardScreen extends React.Component {
 
+    state = {
+        annualRevenue: 0,
+        unpaidLoads: 0,
+        currentLoads: 0,
+        completedLoads: 0,
+        drivers: [],
+        loaded: false
+    };
+
+    componentDidMount() {
+        let token = this.props.tokenState.token;
+
+        if(token) {
+            getAnnualRevenue(token).then(data => this.setState({annualRevenue: data.data.getTotalRevenue.revenue}));
+            getUnpaidRevenue(token).then(data => this.setState({unpaidLoads: data.data.getUnpaidLoads.revenue}));
+            getCurrentLoads(token).then(data => this.setState({currentLoads: data.data.getCurrentLoads.loads}));
+            getCompletedLoads(token).then(data => this.setState({completedLoads: data.data.getCompletedLoads.loads}));
+            getDrivers(token).then(data => this.setState({drivers: data.data.getDrivers}));
+        }
+
+        this.setState({loaded: true});
+    }
+    
     renderInfoCard = (Icon, title, text, gradient) => {
         let {classes} = this.props;
 
@@ -74,16 +64,20 @@ class DashboardScreen extends React.Component {
     };
 
     render() {
+        let {annualRevenue, unpaidLoads, currentLoads, completedLoads, drivers, loaded} = this.state;
         let {classes} = this.props;
+        if(!loaded) {
+            return <div className='loaderContainer'><div className='loader'>Loading...</div></div>;
+        }
 
         return (
             <MuiThemeProvider theme={defaultTheme}>
                 <div className={classes.content}>
                     <Grid container spacing={4} className={classes.contentGrid} direction='row' justify='center' wrap='wrap'>
-                        {this.renderInfoCard(AccountBalanceWallet, 'Annual Revenue', converToMoney('10000'), classes.blueGradient)}
-                        {this.renderInfoCard(MoneyOff, 'Unpaid Loads', converToMoney('4500'), classes.redGradient)}
-                        {this.renderInfoCard(LocalShipping, 'Current Loads', '3', classes.orangeGradient)}
-                        {this.renderInfoCard(PlaylistAddCheck, 'Completed Loads', '24', classes.greenGradient)}
+                        {this.renderInfoCard(AccountBalanceWallet, 'Annual Revenue', converToMoney(annualRevenue), classes.blueGradient)}
+                        {this.renderInfoCard(MoneyOff, 'Unpaid Loads', converToMoney(unpaidLoads), classes.redGradient)}
+                        {this.renderInfoCard(LocalShipping, 'Current Loads', currentLoads, classes.orangeGradient)}
+                        {this.renderInfoCard(PlaylistAddCheck, 'Completed Loads', completedLoads, classes.greenGradient)}
 
                         <Grid item className={classes.tableGrid}>
                             <TableContainer className={classes.driverTable}>
@@ -99,16 +93,16 @@ class DashboardScreen extends React.Component {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {driverData.map(driver => (
+                                        {drivers.map(driver => (
                                             <TableRow key={driver.name}>
                                                 <TableCell>{driver.name}</TableCell>
-                                                <TableCell align='center'>{driver.loadsCompleted}</TableCell>
-                                                <TableCell align='center'>{driver.payCut}</TableCell>
+                                                <TableCell align='center'>{driver.loadsComplete.length}</TableCell>
+                                                <TableCell align='center'>{driver.payCut}%</TableCell>
                                                 <TableCell align='center'>{converToMoney(driver.earnings)}</TableCell>
                                                 <TableCell align='center'>{driver.phoneNumber}</TableCell>
                                                 <TableCell align='center' className={driver.status === 'Driving' ? classes.driving : classes.sitting}>{driver.status}</TableCell>
                                             </TableRow>
-                                        ))}
+                                            ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -120,4 +114,10 @@ class DashboardScreen extends React.Component {
     }
 }
 
-export default withStyles(MaterialDashboardStyles, {withTheme: true, defaultTheme})(DashboardScreen);
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+
+export default withStyles(MaterialDashboardStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps)(DashboardScreen));

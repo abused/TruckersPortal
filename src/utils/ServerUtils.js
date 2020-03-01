@@ -1,4 +1,20 @@
-import {checkTokenQuery, loginQuery, addUserQuery} from "./GraphQLQueries";
+import {
+    checkTokenQuery,
+    loginQuery,
+    addUserQuery,
+    getAnnualRevenueQuery,
+    getUnpaidLoadsQuery,
+    getCurrentLoadsQuery,
+    getCompletedLoadsQuery,
+    getDriversQuery,
+    getLoadsQuery,
+    addLoadQuery,
+    getLoadQuery,
+    addDriverQuery,
+    getUsersQuery,
+    updateUserPasswordQuery,
+    updateUserQuery, getCarrierQuery, updateCarrierQuery
+} from "./GraphQLQueries";
 //let URL = window.location.href.replace('/panel', '') + '/graphql';
 //Test API Server
 let URL = 'https://cors-anywhere.herokuapp.com/http://172.106.202.159/graphql';
@@ -11,8 +27,64 @@ function authenticateUser(email, password) {
     return fetchQuery(loginQuery, {email, password}).then(handleResponse);
 }
 
-function addUser(firstName, lastName, email, phoneNumber, permissions, password) {
-    return fetchQuery(addUserQuery, {token: 'EIS9Zy5a4GiprK3kryR78ClkSNBvSQxPMyF8SaWuxJ0Hg3B52dX954PxVzTLP1tf', firstName, lastName, email, phoneNumber, permissions, password}).then(handleResponse);
+function addUser(token, firstName, lastName, email, phoneNumber, permissions, password) {
+    return fetchQuery(addUserQuery, {token, firstName, lastName, email, phoneNumber, permissions, password}).then(handleResponse);
+}
+
+function getAnnualRevenue(token) {
+    return fetchQuery(getAnnualRevenueQuery, {token}).then(handleResponse);
+}
+
+function getUnpaidRevenue(token) {
+    return fetchQuery(getUnpaidLoadsQuery, {token}).then(handleResponse);
+}
+
+function getCurrentLoads(token) {
+    return fetchQuery(getCurrentLoadsQuery, {token}).then(handleResponse);
+}
+
+function getCompletedLoads(token) {
+    return fetchQuery(getCompletedLoadsQuery, {token}).then(handleResponse);
+}
+
+function getDrivers(token) {
+    return fetchQuery(getDriversQuery, {token}).then(handleResponse);
+}
+
+function getLoads(token) {
+    return fetchQuery(getLoadsQuery, {token}).then(handleResponse);
+}
+
+function addLoad(token, brokerName, loadNumber, rate, detention, driverId, status, paid) {
+    return fetchQuery(addLoadQuery, {token, brokerName, loadNumber, rate: parseFloat(rate), detention: parseFloat(detention), driverId, status, paid}).then(handleResponse);
+}
+
+function getLoad(token, loadId) {
+    return fetchQuery(getLoadQuery, {token, id: loadId}).then(handleResponse);
+}
+
+function addDriver(token, name, payCut, phoneNumber) {
+    return fetchQuery(addDriverQuery, {token, name, payCut, phoneNumber}).then(handleResponse);
+}
+
+function getUsers(token) {
+    return fetchQuery(getUsersQuery, {token}).then(handleResponse);
+}
+
+function updateUser(token, userId, firstName, lastName, email, phoneNumber) {
+    return fetchQuery(updateUserQuery, {token, userId, firstName, lastName, email, phoneNumber}).then(handleResponse);
+}
+
+function updateUserPassword(token, userId, currentPassword, newPassword) {
+    return fetchQuery(updateUserPasswordQuery, {token, userId, currentPassword, newPassword}).then(handleResponse);
+}
+
+function getCarrierData(token) {
+    return fetchQuery(getCarrierQuery, {token}).then(handleResponse);
+}
+
+function updateCarrier(vars) {
+    return fetchQuery(updateCarrierQuery, vars).then(handleResponse);
 }
 
 async function fetchQuery(query, variables) {
@@ -34,4 +106,22 @@ function handleResponse(response) {
     });
 }
 
-export {authenticateToken, authenticateUser, addUser};
+export {
+    authenticateToken,
+    authenticateUser,
+    addUser,
+    getAnnualRevenue,
+    getUnpaidRevenue,
+    getCurrentLoads,
+    getCompletedLoads,
+    getDrivers,
+    getLoads,
+    addLoad,
+    getLoad,
+    addDriver,
+    getUsers,
+    updateUser,
+    updateUserPassword,
+    getCarrierData,
+    updateCarrier
+};

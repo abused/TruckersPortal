@@ -21,35 +21,42 @@ import {
     InputLabel,
     Input,
     Checkbox,
-    FormControlLabel
+    FormControlLabel,
+    Snackbar
 } from "@material-ui/core";
+import {Alert} from "@material-ui/lab";
 import {MaterialUserStyles} from "../styles/UsersStyles";
+import {connect} from "react-redux";
 import {defaultTheme} from "../styles/Theme";
 import {PERMISSIONS} from "../utils/Permissions";
 import {TablePaginationActions, rowsPerPage, CustomTextMask} from "../utils/TableUtils";
-
-let users = [
-    {
-        firstName: 'Mohammad',
-        lastName: 'Alothman',
-        email: 'techperson71@gmail.com',
-        number: '(313) 247-2218',
-        permissions: ['all']
-    }
-];
+import {addUser, getUsers} from "../utils/ServerUtils";
 
 class UsersScreen extends React.Component {
 
     state = {
         page: 0,
-        addUser: false,
+        addUserDialog: false,
         emptyFields: false,
         firstName: '',
         lastName: '',
         email: '',
         number: '(   )    -    ',
-        permissions: [PERMISSIONS.ALL.key]
+        permissions: [PERMISSIONS.ALL.key],
+        users: [],
+        loaded: false,
+        showSuccess: false
     };
+
+    componentDidMount() {
+        let token = this.props.tokenState.token;
+
+        if(token) {
+            getUsers(token).then(data => this.setState({users: data.data.getUsers ? data.data.getUsers : []}));
+        }
+
+        this.setState({loaded: true});
+    }
 
     handleChangePage = (event, newPage) => {
         this.setState({page: newPage});
@@ -70,27 +77,39 @@ class UsersScreen extends React.Component {
     };
 
     toggleAddUser = () => {
-        this.setState({addUser: !this.state.addUser});
+        this.setState({addUserDialog: !this.state.addUserDialog});
     };
 
-    addUser = () => {
-        let {firstName, lastName, email, number} = this.state;
-
+    createUser = () => {
+        let {firstName, lastName, email, number, permissions} = this.state;
         if(!firstName || !lastName || !email || !number.replace(/ /g, '').replace('-', '').replace('(', '').replace(')', '')) {
             this.setState({emptyFields: true});
             return;
         }
+
+        addUser(this.props.tokenState.token, firstName, lastName, email, number, permissions).then(data => {
+           this.setState({addUserDialog: false, showSuccess: true});
+            this.componentDidMount();
+        });
+    };
+
+    closeSnackbar = () => {
+        this.setState({showSuccess: false});
     };
 
     render() {
-        let {page, addUser, emptyFields, firstName, lastName, email, number, permissions} = this.state;
+        let {page, addUserDialog, emptyFields, firstName, lastName, email, number, permissions, loaded, users, showSuccess} = this.state;
         let {classes} = this.props;
         let emptyRows = rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
+
+        if(!loaded) {
+            return <div className='loaderContainer'><div className='loader'>Loading...</div></div>;
+        }
 
         return (
             <MuiThemeProvider theme={defaultTheme}>
                 <div className={classes.content}>
-                    <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={addUser} onClose={this.toggleAddUser}>
+                    <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={addUserDialog} onClose={this.toggleAddUser}>
                         <DialogTitle>
                             Add Panel User
                             {emptyFields ? <Typography className={classes.errorInput}>Please make sure all fields are filled in!</Typography> : null}
@@ -150,7 +169,7 @@ class UsersScreen extends React.Component {
 
                         <DialogActions>
                             <Button onClick={this.toggleAddUser} color="primary">Cancel</Button>
-                            <Button onClick={this.addUser} color="primary">Add User</Button>
+                            <Button onClick={this.createUser} color="primary">Add User</Button>
                         </DialogActions>
                     </Dialog>
 
@@ -171,10 +190,10 @@ class UsersScreen extends React.Component {
                             </TableHead>
                             <TableBody>
                                 {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user => (
-                                    <TableRow key={user.firstName + user.lastName} className='loadItem'>
+                                    <TableRow key={user.id} className='loadItem'>
                                         <TableCell align='left'>{user.firstName + ' ' + user.lastName}</TableCell>
                                         <TableCell align='left'>{user.email}</TableCell>
-                                        <TableCell align='left'>{user.number}</TableCell>
+                                        <TableCell align='left'>{user.phoneNumber}</TableCell>
                                         <TableCell align='left'>{user.permissions.map(permission => PERMISSIONS[permission.toUpperCase()].display + ' ')}</TableCell>
                                     </TableRow>
                                 ))}
@@ -198,10 +217,25 @@ class UsersScreen extends React.Component {
                             </TableFooter>
                         </Table>
                     </TableContainer>
+
+                    <Snackbar
+                        open={showSuccess}
+                        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                        onClose={this.closeSnackbar}
+                        autoHideDuration={6000}
+                    >
+                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Added User!</Alert>
+                    </Snackbar>
                 </div>
             </MuiThemeProvider>
         );
     }
 }
 
-export default withStyles(MaterialUserStyles, {withTheme: true, defaultTheme})(UsersScreen);
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+
+export default withStyles(MaterialUserStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps)(UsersScreen));

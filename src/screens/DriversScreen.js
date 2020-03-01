@@ -23,59 +23,41 @@ import {
     FormControl,
     InputLabel,
     Input,
-    InputAdornment
+    InputAdornment, Snackbar
 } from "@material-ui/core";
+import {Alert} from "@material-ui/lab";
 import {defaultTheme} from "../styles/Theme";
 import {MaterialDriversStyles} from "../styles/DriversStyles";
 import {converToMoney} from "../utils/NumberUtils";
 import {TablePaginationActions, rowsPerPage, CustomTextMask} from "../utils/TableUtils";
-
-let driverData = [
-    {
-        name: 'Driver 1',
-        loadsCompleted: '2',
-        payCut: '20%',
-        earnings: '5400',
-        phoneNumber: '(313) 315-1514',
-        status: 'Driving'
-    },
-    {
-        name: 'Driver 2',
-        loadsCompleted: '0',
-        payCut: '20%',
-        earnings: '0',
-        phoneNumber: '(734) 321-6528',
-        status: 'Sitting'
-    },
-    {
-        name: 'Driver 3',
-        loadsCompleted: '1',
-        payCut: '15%',
-        earnings: '2200',
-        phoneNumber: '(313) 315-1514',
-        status: 'Driving'
-    },
-    {
-        name: 'Driver 4',
-        loadsCompleted: '6',
-        payCut: '20%',
-        earnings: '16350',
-        phoneNumber: '(734) 321-1258',
-        status: 'Driving'
-    }
-];
+import {getDrivers} from "../utils/ServerUtils";
+import {connect} from "react-redux";
+import {addDriver} from "../utils/ServerUtils";
 
 class DriversScreen extends React.Component {
 
     state = {
         filter: 'All',
         page: 0,
-        addDriver: false,
+        addDriverDialog: false,
         driverName: '',
         payCut: '',
         numberMask: '(   )    -    ',
-        emptyFields: false
+        emptyFields: false,
+        loaded: false,
+        drivers: [],
+        showSuccess: false
     };
+
+    componentDidMount() {
+        let token = this.props.tokenState.token;
+
+        if(token) {
+            getDrivers(token).then(data => this.setState({drivers: data.data.getDrivers}));
+        }
+
+        this.setState({loaded: true});
+    }
 
     handleChangePage = (event, newPage) => {
         this.setState({page: newPage});
@@ -86,9 +68,9 @@ class DriversScreen extends React.Component {
     };
 
     filterData = () => {
-        let {filter} = this.state;
+        let {filter, drivers} = this.state;
 
-        return driverData.filter((driver) => {
+        return drivers.filter((driver) => {
             if(filter === 'All')
                 return true;
 
@@ -97,26 +79,39 @@ class DriversScreen extends React.Component {
     };
 
     toggleAddDriver = () => {
-        this.setState({addDriver: !this.state.addDriver});
+        this.setState({addDriverDialog: !this.state.addDriverDialog});
     };
 
-    addDriver = () => {
+    createDriver = () => {
         let {driverName, payCut, numberMask} = this.state;
         if(!driverName.replace(/ /g, '') || !payCut.replace(/ /g, '') || !numberMask.replace(/ /g, '').replace('-', '').replace('(', '').replace(')', '')) {
             this.setState({emptyFields: true});
             return;
         }
+
+        addDriver(this.props.tokenState.token, driverName, payCut, numberMask).then(data => {
+            this.setState({addDriverDialog: false, showSuccess: true});
+            this.componentDidMount();
+        });
+    };
+
+    closeSnackbar = () => {
+        this.setState({showSuccess: false});
     };
 
     render() {
-        let {page, filter, addDriver, driverName, payCut, numberMask, emptyFields} = this.state;
+        let {page, filter, addDriverDialog, driverName, payCut, numberMask, emptyFields, loaded, drivers, showSuccess} = this.state;
         let {classes} = this.props;
-        let emptyRows = rowsPerPage - Math.min(rowsPerPage, driverData.length - page * rowsPerPage);
+        let emptyRows = rowsPerPage - Math.min(rowsPerPage, drivers.length - page * rowsPerPage);
+
+        if(!loaded) {
+            return <div className='loaderContainer'><div className='loader'>Loading...</div></div>;
+        }
 
         return (
             <MuiThemeProvider theme={defaultTheme}>
                 <div className={classes.content}>
-                    <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={addDriver} onClose={this.toggleAddDriver}>
+                    <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={addDriverDialog} onClose={this.toggleAddDriver}>
                         <DialogTitle>
                             Add Driver
                             {emptyFields ? <Typography className={classes.errorInput}>Please make sure all fields are filled in!</Typography> : null}
@@ -153,7 +148,7 @@ class DriversScreen extends React.Component {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={this.toggleAddDriver} color="primary">Cancel</Button>
-                            <Button onClick={this.addDriver} color="primary">Add Driver</Button>
+                            <Button onClick={this.createDriver} color="primary">Add Driver</Button>
                         </DialogActions>
                     </Dialog>
 
@@ -187,8 +182,8 @@ class DriversScreen extends React.Component {
                                 {this.filterData().slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(driver => (
                                     <TableRow key={driver.name} className='loadItem'>
                                         <TableCell align='left'>{driver.name}</TableCell>
-                                        <TableCell align='left'>{driver.loadsCompleted}</TableCell>
-                                        <TableCell align='left'>{driver.payCut}</TableCell>
+                                        <TableCell align='left'>{driver.loadsComplete.length}</TableCell>
+                                        <TableCell align='left'>{driver.payCut}%</TableCell>
                                         <TableCell align='left'>{converToMoney(driver.earnings)}</TableCell>
                                         <TableCell align='left'>{driver.phoneNumber}</TableCell>
                                         <TableCell align='center' className={driver.status === 'Driving' ? classes.drivingCell : driver.status === 'Sitting' ? classes.sittingCell : classes.firedCell}>{driver.status}</TableCell>
@@ -205,7 +200,7 @@ class DriversScreen extends React.Component {
                                         labelDisplayedRows={() => ''}
                                         rowsPerPage={rowsPerPage}
                                         colSpan={3}
-                                        count={driverData.length}
+                                        count={drivers.length}
                                         page={page}
                                         onChangePage={this.handleChangePage}
                                         ActionsComponent={TablePaginationActions}
@@ -214,10 +209,25 @@ class DriversScreen extends React.Component {
                             </TableFooter>
                         </Table>
                     </TableContainer>
+
+                    <Snackbar
+                        open={showSuccess}
+                        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                        onClose={this.closeSnackbar}
+                        autoHideDuration={6000}
+                    >
+                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Added Driver!</Alert>
+                    </Snackbar>
                 </div>
             </MuiThemeProvider>
         );
     }
 }
 
-export default withStyles(MaterialDriversStyles, {withTheme: true, defaultTheme})(DriversScreen);
+const mapStateToProps = state => {
+    return {
+        tokenState: state.token
+    };
+};
+
+export default withStyles(MaterialDriversStyles, {withTheme: true, defaultTheme})(connect(mapStateToProps)(DriversScreen));

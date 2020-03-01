@@ -52,7 +52,8 @@ let MaterialDriversStyles = theme => ({
     driverTable: {
         width: '70%',
         backgroundColor: theme.palette.primary.table.main,
-        boxShadow: `2px 2px 15px -6px rgba(0, 0, 0, 0.75)`
+        boxShadow: `2px 2px 15px -6px rgba(0, 0, 0, 0.75)`,
+        marginBottom: 40
     },
     tableHead: {
         background: `linear-gradient(40deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`

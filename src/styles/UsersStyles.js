@@ -33,7 +33,8 @@ let MaterialUserStyles = theme => ({
         color: theme.palette.text.secondary
     },
     dialogPaper: {
-        backgroundColor: theme.palette.primary.table.main
+        backgroundColor: theme.palette.primary.table.main,
+        position: 'relative'
     },
     errorInput: {
         color: theme.palette.error.main
