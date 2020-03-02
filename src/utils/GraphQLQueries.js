@@ -237,6 +237,15 @@ query ($token: String) {
 }
 `;
 
+const updateLoadStatusQuery = `
+mutation UpdateLoadStatus($token: String, $loadId: String, $status: String, $paid: Boolean) {
+    updateLoadStatus(token: $token, loadId: $loadId, status: $status, paid: $paid) {
+        status
+        paid
+    }
+}
+`;
+
 export {
     loginQuery,
     checkTokenQuery,
@@ -257,5 +266,6 @@ export {
     getCurrentLoadsQuery,
     updateUserQuery,
     updateUserPasswordQuery,
-    getCarrierQuery
+    getCarrierQuery,
+    updateLoadStatusQuery
 };

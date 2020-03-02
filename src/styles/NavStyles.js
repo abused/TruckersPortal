@@ -46,7 +46,7 @@ let MaterialNavStyles = theme => ({
         width: theme.spacing(7) + 1,
         overflow: 'hidden',
         transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.easeIn,
+            easing: theme.transitions.easing.easeInOut,
             duration: theme.transitions.duration.leavingScreen
         }),
         [theme.breakpoints.up('sm')]: {

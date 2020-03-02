@@ -122,6 +122,17 @@ let MaterialLoadsStyles = theme => ({
         color: theme.palette.secondary.main,
         marginTop: 10,
         marginLeft: 10
+    },
+    dropdownMenu: {
+        '& .MuiMenu-paper': {
+            backgroundColor: theme.palette.background.default,
+            boxShadow: `1px 1px 21px 0px rgba(0, 0, 0, 0.4)`
+        }
+    },
+    menuItems: {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.2)'
+        }
     }
 });
 

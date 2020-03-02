@@ -15,16 +15,20 @@ import {
     ListItem,
     ListItemText,
     Button,
-    Snackbar
+    Snackbar,
+    Menu,
+    MenuItem
 } from "@material-ui/core"
 import {Alert} from "@material-ui/lab";
+import {Description, Publish, Update, Visibility, DoneAll, NoteAdd, AssignmentTurnedIn, HourglassEmpty, Cancel} from "@material-ui/icons";
 import {connect} from "react-redux";
 import {defaultTheme} from "../styles/Theme";
 import {MaterialLoadsStyles} from "../styles/LoadsStyles";
 import {converToMoney} from "../utils/NumberUtils";
 import {TablePaginationActions, rowsPerPage} from "../utils/TableUtils";
 import LoadsCreateScreen from "./LoadsCreateScreen";
-import {getLoads} from "../utils/ServerUtils";
+import {getLoads, updateLoad} from "../utils/ServerUtils";
+import {FILES_URL} from "../utils/FileUtils";
 
 class LoadsScreen extends React.Component {
 
@@ -34,7 +38,11 @@ class LoadsScreen extends React.Component {
         addLoad: false,
         loads: [],
         showSuccess: false,
-        loaded: false
+        loaded: false,
+        selectedLoad: null,
+        rateConLink: '',
+        bolLink: '',
+        anchorEl: null,
     };
 
     constructor(props) {
@@ -80,8 +88,54 @@ class LoadsScreen extends React.Component {
         this.setState({showSuccess: false});
     };
 
+    selectLoad = (event, load) => {
+        fetch(FILES_URL + load.id + '-rate.pdf', {method: 'GET'}).then(response => {
+            if(response.ok) {
+                this.setState({rateConLink: FILES_URL + load.id + '-rate.pdf'});
+            }else {
+                fetch(FILES_URL + load.id + '-rate.png', {method: 'GET'}).then(pngRes => {
+                    if(pngRes.ok) {
+                        this.setState({rateConLink: FILES_URL + load.id + '-rate.png'});
+                    }
+                });
+            }
+        });
+
+        fetch(FILES_URL + load.id + '-bol.pdf', {method: 'GET'}).then(response => {
+            if(response.ok) {
+                this.setState({bolLink: FILES_URL + load.id + '-bol.pdf'});
+            }else {
+                fetch(FILES_URL + load.id + '-bol.png', {method: 'GET'}).then(pngRes => {
+                    if(pngRes.ok) {
+                        this.setState({bolLink: FILES_URL + load.id + '-bol.png'});
+                    }
+                });
+            }
+        });
+
+        this.setState({anchorEl: event.currentTarget, selectedLoad: load});
+    };
+
+    updateStatus = (status) => {
+        let {selectedLoad} = this.state;
+
+        updateLoad(this.props.tokenState.token, selectedLoad.id, status, selectedLoad.paid).then(data => {
+            this.setState({showSuccess: true, anchorEl: null});
+            this.componentDidMount();
+        });
+    };
+
+    setPaid = () => {
+        let {selectedLoad} = this.state;
+
+        updateLoad(this.props.tokenState.token, selectedLoad.id, selectedLoad.status, true).then(data => {
+            this.setState({showSuccess: true, anchorEl: null});
+            this.componentDidMount();
+        });
+    };
+
     render() {
-        let {page, addLoad, filter, loads, showSuccess, loaded} = this.state;
+        let {page, addLoad, filter, loads, showSuccess, loaded, selectedLoad, anchorEl, rateConLink, bolLink} = this.state;
         let {classes} = this.props;
         let emptyRows = rowsPerPage - Math.min(rowsPerPage, loads.length - page * rowsPerPage);
         if(addLoad) {
@@ -113,22 +167,26 @@ class LoadsScreen extends React.Component {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell><Typography variant='h6'>Load Number</Typography></TableCell>
+                                    <TableCell align='center'><Typography variant='h6'>+</Typography></TableCell>
+                                    <TableCell align='left'><Typography variant='h6'>Load Number</Typography></TableCell>
                                     <TableCell align='left'><Typography variant='h6'>Broker</Typography></TableCell>
                                     <TableCell align='left'><Typography variant='h6'>Rate</Typography></TableCell>
                                     <TableCell align='left'><Typography variant='h6'>Detention</Typography></TableCell>
                                     <TableCell align='left'><Typography variant='h6'>Driver</Typography></TableCell>
+                                    <TableCell align='left'><Typography variant='h6'>Paid</Typography></TableCell>
                                     <TableCell align='center'><Typography variant='h6'>Status</Typography></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {this.filterData().slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(load => (
                                     <TableRow key={load.loadNumber} className='loadItem'>
-                                        <TableCell>#{load.loadNumber}</TableCell>
+                                        <TableCell align='center' onClick={event => this.selectLoad(event, load)}><Description /></TableCell>
+                                        <TableCell align='left'>#{load.loadNumber}</TableCell>
                                         <TableCell align='left'>{load.brokerName}</TableCell>
                                         <TableCell align='left'>{converToMoney(load.rate)}</TableCell>
                                         <TableCell align='left'>{converToMoney(load.detention)}</TableCell>
                                         <TableCell align='left'>{load.driver}</TableCell>
+                                        <TableCell align='left'>{load.paid ? 'Yes' : 'No'}</TableCell>
                                         <TableCell align='center' className={load.status === 'Complete' ? classes.completeCell : load.status === 'In Progress' ? classes.inProgressCell : classes.canceledCell}>{load.status}</TableCell>
                                     </TableRow>
                                 ))}
@@ -153,13 +211,31 @@ class LoadsScreen extends React.Component {
                         </Table>
                     </TableContainer>
 
+                    {
+                        selectedLoad && anchorEl ?
+                            <Menu
+                                className={classes.dropdownMenu}
+                                open={Boolean(anchorEl)}
+                                keepMounted
+                                onClose={() => this.setState({anchorEl: null})}
+                                anchorEl={anchorEl}
+                            >
+                                {rateConLink ? <MenuItem className={classes.menuItems} onClick={() => window.open(rateConLink, '_blank')}><Visibility />   Show Rate Confirmation</MenuItem> : <MenuItem className={classes.menuItems}><NoteAdd />   Upload Rate Confirmation</MenuItem>}
+                                {bolLink ? <MenuItem className={classes.menuItems} onClick={() => window.open(bolLink, '_blank')}><Visibility />   Show BOL</MenuItem> : <MenuItem className={classes.menuItems}><Publish />   Upload BOL</MenuItem>}
+                                <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Complete')}><AssignmentTurnedIn />   Set Complete</MenuItem>
+                                <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('In Progress')}><HourglassEmpty />   Set In Progress</MenuItem>
+                                <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Canceled')}><Cancel />   Set Canceled</MenuItem>
+                                {selectedLoad.paid ? null : <MenuItem className={classes.menuItems} onClick={this.setPaid}><DoneAll />   Set Paid</MenuItem>}
+                            </Menu> : null
+                    }
+
                     <Snackbar
                         open={showSuccess}
                         anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                         onClose={this.closeSnackbar}
                         autoHideDuration={6000}
                     >
-                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Added Load!</Alert>
+                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Updated Load!</Alert>
                     </Snackbar>
                 </div>
             </MuiThemeProvider>
