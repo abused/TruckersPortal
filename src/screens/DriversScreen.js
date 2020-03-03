@@ -23,7 +23,10 @@ import {
     FormControl,
     InputLabel,
     Input,
-    InputAdornment, Snackbar
+    InputAdornment,
+    Snackbar,
+    Menu,
+    MenuItem
 } from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import {defaultTheme} from "../styles/Theme";
@@ -33,6 +36,7 @@ import {TablePaginationActions, rowsPerPage, CustomTextMask} from "../utils/Tabl
 import {getDrivers} from "../utils/ServerUtils";
 import {connect} from "react-redux";
 import {addDriver} from "../utils/ServerUtils";
+import {Cancel, Description, DriveEta, EventSeat} from "@material-ui/icons";
 
 class DriversScreen extends React.Component {
 
@@ -46,7 +50,9 @@ class DriversScreen extends React.Component {
         emptyFields: false,
         loaded: false,
         drivers: [],
-        showSuccess: false
+        showSuccess: false,
+        anchorEl: null,
+        selectedDriver: null
     };
 
     componentDidMount() {
@@ -99,8 +105,12 @@ class DriversScreen extends React.Component {
         this.setState({showSuccess: false});
     };
 
+    selectDriver = (event, driver) => {
+        this.setState({anchorEl: event.currentTarget, selectedDriver: driver});
+    };
+
     render() {
-        let {page, filter, addDriverDialog, driverName, payCut, numberMask, emptyFields, loaded, drivers, showSuccess} = this.state;
+        let {page, filter, addDriverDialog, driverName, payCut, numberMask, emptyFields, loaded, drivers, showSuccess, selectedDriver, anchorEl} = this.state;
         let {classes} = this.props;
         let emptyRows = rowsPerPage - Math.min(rowsPerPage, drivers.length - page * rowsPerPage);
 
@@ -170,6 +180,7 @@ class DriversScreen extends React.Component {
                         <Table>
                             <TableHead className={classes.tableHead}>
                                 <TableRow>
+                                    <TableCell align='center'><Typography variant='h6'>+</Typography></TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Driver</TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Loads Completed</TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Percentage Cut</TableCell>
@@ -180,7 +191,8 @@ class DriversScreen extends React.Component {
                             </TableHead>
                             <TableBody>
                                 {this.filterData().slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(driver => (
-                                    <TableRow key={driver.name} className='loadItem'>
+                                    <TableRow key={driver.name}>
+                                        <TableCell className='loadItem' align='center' onClick={event => this.selectDriver(event, driver)}><Description/></TableCell>
                                         <TableCell align='left'>{driver.name}</TableCell>
                                         <TableCell align='left'>{driver.loadsComplete.length}</TableCell>
                                         <TableCell align='left'>{driver.payCut}%</TableCell>
@@ -209,6 +221,21 @@ class DriversScreen extends React.Component {
                             </TableFooter>
                         </Table>
                     </TableContainer>
+
+                    {
+                        selectedDriver && anchorEl ?
+                            <Menu
+                                className={classes.dropdownMenu}
+                                open={Boolean(anchorEl)}
+                                keepMounted
+                                onClose={() => this.setState({anchorEl: null})}
+                                anchorEl={anchorEl}
+                            >
+                                <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Driving')}><DriveEta />   Set Driving</MenuItem>
+                                <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Sitting')}><EventSeat />   Set Sitting</MenuItem>
+                                <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Fired')}><Cancel />   Fire Driver</MenuItem>
+                            </Menu> : null
+                    }
 
                     <Snackbar
                         open={showSuccess}

@@ -20,7 +20,7 @@ import {
 } from "./GraphQLQueries";
 //let URL = window.location.href.replace('/panel', '') + '/graphql';
 //Test API Server
-let URL = 'https://cors-anywhere.herokuapp.com/http://172.106.202.159/graphql';
+let URL = 'http://172.106.202.159/graphql';
 
 function authenticateToken(token) {
     return fetchQuery(checkTokenQuery, {token}).then(handleResponse);

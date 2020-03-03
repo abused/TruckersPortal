@@ -42,7 +42,7 @@ class LoadsScreen extends React.Component {
         selectedLoad: null,
         rateConLink: '',
         bolLink: '',
-        anchorEl: null,
+        anchorEl: null
     };
 
     constructor(props) {
@@ -179,8 +179,8 @@ class LoadsScreen extends React.Component {
                             </TableHead>
                             <TableBody>
                                 {this.filterData().slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(load => (
-                                    <TableRow key={load.loadNumber} className='loadItem'>
-                                        <TableCell align='center' onClick={event => this.selectLoad(event, load)}><Description /></TableCell>
+                                    <TableRow key={load.loadNumber}>
+                                        <TableCell className='loadItem' align='center' onClick={event => this.selectLoad(event, load)}><Description/></TableCell>
                                         <TableCell align='left'>#{load.loadNumber}</TableCell>
                                         <TableCell align='left'>{load.brokerName}</TableCell>
                                         <TableCell align='left'>{converToMoney(load.rate)}</TableCell>

@@ -78,6 +78,7 @@ query ($token: String) {
         detention
         driver
         status
+        paid
     }
 }
 `;
