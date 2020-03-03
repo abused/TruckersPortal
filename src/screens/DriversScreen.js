@@ -33,9 +33,8 @@ import {defaultTheme} from "../styles/Theme";
 import {MaterialDriversStyles} from "../styles/DriversStyles";
 import {converToMoney} from "../utils/NumberUtils";
 import {TablePaginationActions, rowsPerPage, CustomTextMask} from "../utils/TableUtils";
-import {getDrivers} from "../utils/ServerUtils";
 import {connect} from "react-redux";
-import {addDriver} from "../utils/ServerUtils";
+import {addDriver, updateDriverStatus, getDrivers} from "../utils/ServerUtils";
 import {Cancel, Description, DriveEta, EventSeat} from "@material-ui/icons";
 
 class DriversScreen extends React.Component {
@@ -109,6 +108,15 @@ class DriversScreen extends React.Component {
         this.setState({anchorEl: event.currentTarget, selectedDriver: driver});
     };
 
+    updateStatus = (status) => {
+        let {selectedDriver} = this.state;
+
+        updateDriverStatus(this.props.tokenState.token, selectedDriver.id, status).then(data => {
+            this.setState({showSuccess: true, anchorEl: null});
+            this.componentDidMount();
+        });
+    };
+
     render() {
         let {page, filter, addDriverDialog, driverName, payCut, numberMask, emptyFields, loaded, drivers, showSuccess, selectedDriver, anchorEl} = this.state;
         let {classes} = this.props;
@@ -180,7 +188,7 @@ class DriversScreen extends React.Component {
                         <Table>
                             <TableHead className={classes.tableHead}>
                                 <TableRow>
-                                    <TableCell align='center'><Typography variant='h6'>+</Typography></TableCell>
+                                    <TableCell className={classes.tableCell} align='center'><Typography variant='h6'>+</Typography></TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Driver</TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Loads Completed</TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Percentage Cut</TableCell>
@@ -243,7 +251,7 @@ class DriversScreen extends React.Component {
                         onClose={this.closeSnackbar}
                         autoHideDuration={6000}
                     >
-                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Added Driver!</Alert>
+                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Updated Driver!</Alert>
                     </Snackbar>
                 </div>
             </MuiThemeProvider>

@@ -247,6 +247,14 @@ mutation UpdateLoadStatus($token: String, $loadId: String, $status: String, $pai
 }
 `;
 
+const updateDriverStatusQuery = `
+mutation UpdateDriverStatus($token: String, $driverId: String, $status: String) {
+    updateDriverStatus(token: $token, driverId: $driverId, status: $status) {
+        status
+    }
+}
+`;
+
 export {
     loginQuery,
     checkTokenQuery,
@@ -268,5 +276,6 @@ export {
     updateUserQuery,
     updateUserPasswordQuery,
     getCarrierQuery,
-    updateLoadStatusQuery
+    updateLoadStatusQuery,
+    updateDriverStatusQuery
 };

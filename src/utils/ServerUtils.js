@@ -16,7 +16,8 @@ import {
     updateUserQuery,
     getCarrierQuery,
     updateCarrierQuery,
-    updateLoadStatusQuery
+    updateLoadStatusQuery,
+    updateDriverStatusQuery
 } from "./GraphQLQueries";
 //let URL = window.location.href.replace('/panel', '') + '/graphql';
 //Test API Server
@@ -94,6 +95,10 @@ function updateLoad(token, loadId, status, paid) {
     return fetchQuery(updateLoadStatusQuery, {token, loadId, status, paid: paid}).then(handleResponse);
 }
 
+function updateDriverStatus(token, driverId, status) {
+    return fetchQuery(updateDriverStatusQuery, {token, driverId, status}).then(handleResponse);
+}
+
 async function fetchQuery(query, variables) {
     let options = {
         method: 'POST',
@@ -131,5 +136,6 @@ export {
     updateUserPassword,
     getCarrierData,
     updateCarrier,
-    updateLoad
+    updateLoad,
+    updateDriverStatus
 };

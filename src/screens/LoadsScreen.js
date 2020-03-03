@@ -28,7 +28,7 @@ import {converToMoney} from "../utils/NumberUtils";
 import {TablePaginationActions, rowsPerPage} from "../utils/TableUtils";
 import LoadsCreateScreen from "./LoadsCreateScreen";
 import {getLoads, updateLoad} from "../utils/ServerUtils";
-import {FILES_URL} from "../utils/FileUtils";
+import {FILES_URL, uploadDocument} from "../utils/FileUtils";
 
 class LoadsScreen extends React.Component {
 
@@ -134,6 +134,14 @@ class LoadsScreen extends React.Component {
         });
     };
 
+    uploadDoc = (event, bol) => {
+        let {selectedLoad} = this.state;
+        let file = event.target.files[0];
+
+        uploadDocument(selectedLoad.id, bol ? null : file, bol ? file : null);
+        this.setState({showSuccess: true, anchorEl: null});
+    };
+
     render() {
         let {page, addLoad, filter, loads, showSuccess, loaded, selectedLoad, anchorEl, rateConLink, bolLink} = this.state;
         let {classes} = this.props;
@@ -220,8 +228,18 @@ class LoadsScreen extends React.Component {
                                 onClose={() => this.setState({anchorEl: null})}
                                 anchorEl={anchorEl}
                             >
-                                {rateConLink ? <MenuItem className={classes.menuItems} onClick={() => window.open(rateConLink, '_blank')}><Visibility />   Show Rate Confirmation</MenuItem> : <MenuItem className={classes.menuItems}><NoteAdd />   Upload Rate Confirmation</MenuItem>}
-                                {bolLink ? <MenuItem className={classes.menuItems} onClick={() => window.open(bolLink, '_blank')}><Visibility />   Show BOL</MenuItem> : <MenuItem className={classes.menuItems}><Publish />   Upload BOL</MenuItem>}
+                                {rateConLink ? <MenuItem className={classes.menuItems} onClick={() => window.open(rateConLink, '_blank')}><Visibility />   Show Rate Confirmation</MenuItem> : <MenuItem className={classes.menuItems}>
+                                    <input type='file' name='file' id='contained-button-file' accept='image/*,.pdf' style={{display: 'none'}} onChange={event => this.uploadDoc(event, false)} />
+                                    <label htmlFor='contained-button-file'>
+                                        <NoteAdd />   Upload Rate Confirmation
+                                    </label>
+                                </MenuItem>}
+                                {bolLink ? <MenuItem className={classes.menuItems} onClick={() => window.open(bolLink, '_blank')}><Visibility />   Show BOL</MenuItem> : <MenuItem className={classes.menuItems}>
+                                    <input type='file' name='file' id='contained-button-file2' accept='image/*,.pdf' style={{display: 'none'}} onChange={event => this.uploadDoc(event, true)} />
+                                    <label htmlFor='contained-button-file2'>
+                                        <Publish />   Upload BOL
+                                    </label>
+                                </MenuItem>}
                                 <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Complete')}><AssignmentTurnedIn />   Set Complete</MenuItem>
                                 <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('In Progress')}><HourglassEmpty />   Set In Progress</MenuItem>
                                 <MenuItem className={classes.menuItems} onClick={() => this.updateStatus('Canceled')}><Cancel />   Set Canceled</MenuItem>
