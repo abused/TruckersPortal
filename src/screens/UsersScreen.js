@@ -24,13 +24,14 @@ import {
     FormControlLabel,
     Snackbar
 } from "@material-ui/core";
+import {HighlightOff} from "@material-ui/icons";
 import {Alert} from "@material-ui/lab";
 import {MaterialUserStyles} from "../styles/UsersStyles";
 import {connect} from "react-redux";
 import {defaultTheme} from "../styles/Theme";
 import {PERMISSIONS} from "../utils/Permissions";
 import {TablePaginationActions, rowsPerPage, CustomTextMask} from "../utils/TableUtils";
-import {addUser, getUsers} from "../utils/ServerUtils";
+import {addUser, getUsers, removeUser} from "../utils/ServerUtils";
 
 class UsersScreen extends React.Component {
 
@@ -45,7 +46,9 @@ class UsersScreen extends React.Component {
         permissions: [PERMISSIONS.ALL.key],
         users: [],
         loaded: false,
-        showSuccess: false
+        showSuccess: false,
+        prompt: false,
+        selectedUser: null
     };
 
     componentDidMount() {
@@ -97,8 +100,21 @@ class UsersScreen extends React.Component {
         this.setState({showSuccess: false});
     };
 
+    promptRemoveUser = (user) => {
+        this.setState({selectedUser: user, prompt: !this.state.prompt});
+    };
+
+    removeUser = () => {
+        let {selectedUser} = this.state;
+
+        removeUser(this.props.tokenState.token, selectedUser.id).then(data => {
+            this.setState({prompt: false, showSuccess: true});
+            this.componentDidMount();
+        });
+    };
+
     render() {
-        let {page, addUserDialog, emptyFields, firstName, lastName, email, number, permissions, loaded, users, showSuccess} = this.state;
+        let {page, addUserDialog, emptyFields, firstName, lastName, email, number, permissions, loaded, users, showSuccess, prompt, selectedUser} = this.state;
         let {classes} = this.props;
         let emptyRows = rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
 
@@ -109,6 +125,21 @@ class UsersScreen extends React.Component {
         return (
             <MuiThemeProvider theme={defaultTheme}>
                 <div className={classes.content}>
+                    <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={prompt} onClose={this.promptRemoveUser}>
+                        <DialogTitle>
+                            Remove User
+                        </DialogTitle>
+
+                        <DialogContent>
+                            <Typography>Are you sure you want to remove {selectedUser ? selectedUser.firstName : number}?</Typography>
+                        </DialogContent>
+
+                        <DialogActions>
+                            <Button onClick={() => this.promptRemoveUser(null)} color="primary">Cancel</Button>
+                            <Button onClick={this.removeUser} color="secondary">Remove User</Button>
+                        </DialogActions>
+                    </Dialog>
+
                     <Dialog PaperProps={{className: classes.dialogPaper}} disableBackdropClick disableEscapeKeyDown open={addUserDialog} onClose={this.toggleAddUser}>
                         <DialogTitle>
                             Add Panel User
@@ -186,15 +217,18 @@ class UsersScreen extends React.Component {
                                     <TableCell className={classes.tableCell} align='left'>Email</TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Phone Number</TableCell>
                                     <TableCell className={classes.tableCell} align='left'>Permissions</TableCell>
+                                    <TableCell className={classes.tableCell} align='center'>Remove</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(user => (
-                                    <TableRow key={user.id} className='loadItem'>
+                                    <TableRow key={user.id}>
                                         <TableCell align='left'>{user.firstName + ' ' + user.lastName}</TableCell>
                                         <TableCell align='left'>{user.email}</TableCell>
                                         <TableCell align='left'>{user.phoneNumber}</TableCell>
-                                        <TableCell align='left'>{user.permissions.map(permission => PERMISSIONS[permission.toUpperCase()].display + ' ')}</TableCell>
+                                        <TableCell align='left'>{user.permissions.map((permission, index) => PERMISSIONS[permission.toUpperCase()].display + (index >= user.permissions.length-1 ? '' : ', '))}</TableCell>
+
+                                        {user.token === this.props.tokenState.token ? <TableCell align='center'>YOU</TableCell> : <TableCell align='center' className='loadItem' onClick={() => this.promptRemoveUser(user)}><HighlightOff /></TableCell>}
                                     </TableRow>
                                 ))}
 
@@ -224,7 +258,7 @@ class UsersScreen extends React.Component {
                         onClose={this.closeSnackbar}
                         autoHideDuration={6000}
                     >
-                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Added User!</Alert>
+                        <Alert onClose={this.closeSnackbar} severity='success'>Successfully Updated Users!</Alert>
                     </Snackbar>
                 </div>
             </MuiThemeProvider>

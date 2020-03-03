@@ -255,6 +255,12 @@ mutation UpdateDriverStatus($token: String, $driverId: String, $status: String) 
 }
 `;
 
+const removeUserQuery = `
+mutation RemoveUser($token: String, $userId: String) {
+    removeUser(token: $token, userId: $userId)
+}
+`;
+
 export {
     loginQuery,
     checkTokenQuery,
@@ -277,5 +283,6 @@ export {
     updateUserPasswordQuery,
     getCarrierQuery,
     updateLoadStatusQuery,
-    updateDriverStatusQuery
+    updateDriverStatusQuery,
+    removeUserQuery
 };
