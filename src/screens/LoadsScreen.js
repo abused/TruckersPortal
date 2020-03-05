@@ -52,12 +52,13 @@ class LoadsScreen extends React.Component {
 
     componentDidMount() {
         let token = this.props.tokenState.token;
-
-        if(token) {
-            getLoads(token).then(data => this.setState({loads: data.data.getLoads ? data.data.getLoads : []}));
-        }
-
-        this.setState({loaded: true});
+        this.setState({loaded: false}, () => {
+            if(token) {
+                getLoads(token).then(data => this.setState({loads: data.data.getLoads ? data.data.getLoads : []}, () => {
+                    this.setState({loaded: true});
+                }));
+            }
+        });
     }
 
     handleChangePage = (event, newPage) => {
@@ -81,6 +82,7 @@ class LoadsScreen extends React.Component {
 
     handleCreateLoad = () => {
         let {addLoad} = this.state;
+        this.componentDidMount();
         this.setState({addLoad: !addLoad, showSuccess: addLoad});
     };
 

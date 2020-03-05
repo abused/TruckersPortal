@@ -39,10 +39,11 @@ class DashboardScreen extends React.Component {
             getUnpaidRevenue(token).then(data => this.setState({unpaidLoads: data.data.getUnpaidLoads.revenue}));
             getCurrentLoads(token).then(data => this.setState({currentLoads: data.data.getCurrentLoads.loads}));
             getCompletedLoads(token).then(data => this.setState({completedLoads: data.data.getCompletedLoads.loads}));
-            getDrivers(token).then(data => this.setState({drivers: data.data.getDrivers}));
-        }
+            getDrivers(token).then(data => this.setState({drivers: data.data.getDrivers}, () => {
+                this.setState({loaded: true});
 
-        this.setState({loaded: true});
+            }));
+        }
     }
     
     renderInfoCard = (Icon, title, text, gradient) => {

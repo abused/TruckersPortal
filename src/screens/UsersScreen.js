@@ -53,12 +53,13 @@ class UsersScreen extends React.Component {
 
     componentDidMount() {
         let token = this.props.tokenState.token;
-
-        if(token) {
-            getUsers(token).then(data => this.setState({users: data.data.getUsers ? data.data.getUsers : []}));
-        }
-
-        this.setState({loaded: true});
+        this.setState({loaded: false}, () => {
+            if(token) {
+                getUsers(token).then(data => this.setState({users: data.data.getUsers ? data.data.getUsers : []}, () => {
+                    this.setState({loaded: true});
+                }));
+            }
+        });
     }
 
     handleChangePage = (event, newPage) => {

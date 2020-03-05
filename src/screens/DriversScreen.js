@@ -58,10 +58,10 @@ class DriversScreen extends React.Component {
         let token = this.props.tokenState.token;
 
         if(token) {
-            getDrivers(token).then(data => this.setState({drivers: data.data.getDrivers}));
+            getDrivers(token).then(data => this.setState({drivers: data.data.getDrivers}, () => {
+                this.setState({loaded: true});
+            }));
         }
-
-        this.setState({loaded: true});
     }
 
     handleChangePage = (event, newPage) => {
